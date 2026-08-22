@@ -1329,7 +1329,7 @@
 
 /* --- TRIP TYPE TABS STYLES --- */
 .desktop-trip-tabs-bar {
-  display: flex;
+  display: none !important;
   background: rgba(0, 0, 0, 0.04);
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -1363,7 +1363,7 @@
 }
 
 .mobile-trip-tabs-bar {
-  display: flex;
+  display: none !important;
   background: var(--white);
   border-radius: 10px;
   padding: 3px;

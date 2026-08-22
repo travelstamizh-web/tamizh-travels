@@ -250,68 +250,7 @@ export class AppComponent implements OnInit {
   selectedVehicleType: string = 'Hatchback (4 Seater)';
 
   // Static Getaway/History Database
-  historyList: HistoryItem[] = [
-    {
-      id: 1,
-      pickup: 'Ranipet',
-      drop: 'Chennai Airport',
-      distance: 112,
-      ratePerKm: 16.00,
-      baseFare: 80,
-      tollParking: 180,
-      waitingCharges: 0,
-      fare: 1972,
-      date: '21 May 2024 • 09:15 AM'
-    },
-    {
-      id: 2,
-      pickup: 'Ranipet',
-      drop: 'Vellore',
-      distance: 48,
-      ratePerKm: 16.00,
-      baseFare: 80,
-      tollParking: 100,
-      waitingCharges: 0,
-      fare: 928,
-      date: '20 May 2024 • 06:40 PM'
-    },
-    {
-      id: 3,
-      pickup: 'Ranipet',
-      drop: 'Bengaluru',
-      distance: 210,
-      ratePerKm: 16.00,
-      baseFare: 80,
-      tollParking: 200,
-      waitingCharges: 0,
-      fare: 3520,
-      date: '19 May 2024 • 11:30 AM'
-    },
-    {
-      id: 4,
-      pickup: 'Ranipet',
-      drop: 'Tirupati',
-      distance: 156,
-      ratePerKm: 16.00,
-      baseFare: 80,
-      tollParking: 150,
-      waitingCharges: 0,
-      fare: 2608,
-      date: '18 May 2024 • 04:20 PM'
-    },
-    {
-      id: 5,
-      pickup: 'Ranipet',
-      drop: 'Pondicherry',
-      distance: 85,
-      ratePerKm: 16.00,
-      baseFare: 80,
-      tollParking: 120,
-      waitingCharges: 0,
-      fare: 1440,
-      date: '17 May 2024 • 08:10 AM'
-    }
-  ];
+  historyList: HistoryItem[] = [];
 
   ngOnInit() {
     const stored = localStorage.getItem('tamizh_travels_mockup_history');
@@ -381,7 +320,7 @@ export class AppComponent implements OnInit {
       }
       this.isLoadingPickup = true;
       this.debounceTimeoutPickup = setTimeout(() => {
-        this.executeNominatimSearch(query, 'pickup');
+        this.executePhotonSearch(query, 'pickup');
       }, 300);
     } else {
       this.dropLocation = query;
@@ -397,61 +336,41 @@ export class AppComponent implements OnInit {
       }
       this.isLoadingDrop = true;
       this.debounceTimeoutDrop = setTimeout(() => {
-        this.executeNominatimSearch(query, 'drop');
+        this.executePhotonSearch(query, 'drop');
       }, 300);
     }
   }
 
-  executeNominatimSearch(query: string, field: 'pickup' | 'drop') {
-    let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&countrycodes=in&addressdetails=1&limit=12`;
+  executePhotonSearch(query: string, field: 'pickup' | 'drop') {
+    let url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=15&bbox=68,6,97.5,37&osm_tag=!boundary`;
 
     // Bias search to nearby locations if pickup coordinates are known
     if (field === 'drop' && this.pickupCoords) {
-      const minLon = this.pickupCoords.lon - 1.5;
-      const maxLat = this.pickupCoords.lat + 1.5;
-      const maxLon = this.pickupCoords.lon + 1.5;
-      const minLat = this.pickupCoords.lat - 1.5;
-      url += `&viewbox=${minLon},${maxLat},${maxLon},${minLat}&bounded=0`;
+      url += `&lat=${this.pickupCoords.lat}&lon=${this.pickupCoords.lon}`;
     }
 
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        if (!Array.isArray(data) || data.length === 0) {
-          if (field === 'pickup') {
-            this.pickupSuggestions = [];
-            this.isLoadingPickup = false;
-          } else {
-            this.dropSuggestions = [];
-            this.isLoadingDrop = false;
-          }
-          return;
-        }
+        const features = data.features || [];
 
-        // Prioritize actual place nodes, suburbs, POIs, streets over administrative county/boundary centroids
-        const validList = data.filter((item: any) => {
-          return item.class !== 'boundary' && item.addresstype !== 'state';
+        // Exclude boundary polygons (taluks/counties/districts centroids) which skew coordinates
+        const validFeatures = features.filter((f: any) => {
+          const p = f.properties;
+          return p && p.osm_key !== 'boundary' && p.type !== 'county' && p.type !== 'state';
         });
 
-        const targetList = validList.length > 0 ? validList : data;
+        const targetList = validFeatures.length > 0 ? validFeatures : features;
 
-        const suggestions = targetList.map((item: any) => {
-          const addr = item.address || {};
-          const mainName = item.name || addr.suburb || addr.town || addr.city || addr.village || addr.road || item.display_name.split(',')[0];
-          const parts = [
-            addr.suburb && addr.suburb !== mainName ? addr.suburb : '',
-            addr.city && addr.city !== mainName ? addr.city : (addr.town && addr.town !== mainName ? addr.town : ''),
-            addr.state_district || addr.county,
-            addr.state
-          ].filter(Boolean);
-
-          const uniqueParts = Array.from(new Set(parts));
-          const displayName = mainName + (uniqueParts.length > 0 ? ', ' + uniqueParts.join(', ') : '');
-
+        const suggestions = targetList.map((f: any) => {
+          const p = f.properties;
+          const nameParts = [p.district || p.county, p.city, p.state].filter(val => val && val !== p.name);
+          const uniqueParts = Array.from(new Set(nameParts));
+          const displayName = p.name + (uniqueParts.length > 0 ? ', ' + uniqueParts.join(', ') : '');
           return {
             display_name: displayName,
-            lat: parseFloat(item.lat),
-            lon: parseFloat(item.lon)
+            lat: f.geometry.coordinates[1],
+            lon: f.geometry.coordinates[0]
           };
         });
 
@@ -476,7 +395,7 @@ export class AppComponent implements OnInit {
         }
       })
       .catch(err => {
-        console.error('Nominatim search error:', err);
+        console.error('Error fetching suggestions from Photon:', err);
         if (field === 'pickup') {
           this.pickupSuggestions = [];
           this.isLoadingPickup = false;
@@ -726,11 +645,11 @@ export class AppComponent implements OnInit {
 
     const rate = this.getDynamicRatePerKm(veh, calcDistance);
     const baseAndFuel = Math.round(vehicleBase + (calcDistance * rate));
-    const driverAllowance = dist > 100 ? 300 : 0;
+    const driverAllowance = 0;
     const nightAllowance = 0;
     const waitingCharges = Math.max(0, (this.waitingTime || 0) - 60) * 1;
 
-    const subtotal = baseAndFuel + driverAllowance + waitingCharges;
+    const subtotal = baseAndFuel + waitingCharges;
     const gst = Math.round(subtotal * 0.05);
     const total = subtotal + gst;
 
@@ -781,40 +700,36 @@ export class AppComponent implements OnInit {
     this.isLoadingDrop = !this.dropCoords && this.selectedTripType !== 'Local';
 
     try {
-      // 1. Resolve Pickup coordinates via Nominatim
+      // 1. Resolve Pickup coordinates via Photon if they are not cached/selected from dropdown
       if (!this.pickupCoords) {
+        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(this.pickupLocation)}&limit=5&bbox=68,6,97.5,37&osm_tag=!boundary`;
         try {
-          const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(this.pickupLocation)}&format=json&countrycodes=in&addressdetails=1&limit=5`;
-          const res = await fetch(nomUrl);
+          const res = await fetch(url);
           const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const valid = data.find((item: any) => item.class !== 'boundary' && item.addresstype !== 'state') || data[0];
-            this.pickupCoords = { lat: parseFloat(valid.lat), lon: parseFloat(valid.lon) };
+          if (data && data.features && data.features.length > 0) {
+            const valid = data.features.find((f: any) => f.properties?.osm_key !== 'boundary' && f.properties?.type !== 'county') || data.features[0];
+            this.pickupCoords = { lat: valid.geometry.coordinates[1], lon: valid.geometry.coordinates[0] };
           }
         } catch (e) {
-          console.error('Nominatim pickup geocode error:', e);
+          console.error('Pickup geocode error:', e);
         }
       }
 
-      // 2. Resolve Drop coordinates via Nominatim
+      // 2. Resolve Drop coordinates via Photon if they are not cached/selected from dropdown
       if (!this.dropCoords && this.selectedTripType !== 'Local') {
+        let url = `https://photon.komoot.io/api/?q=${encodeURIComponent(this.dropLocation)}&limit=5&bbox=68,6,97.5,37&osm_tag=!boundary`;
+        if (this.pickupCoords) {
+          url += `&lat=${this.pickupCoords.lat}&lon=${this.pickupCoords.lon}`;
+        }
         try {
-          let nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(this.dropLocation)}&format=json&countrycodes=in&addressdetails=1&limit=5`;
-          if (this.pickupCoords) {
-            const minLon = this.pickupCoords.lon - 1.5;
-            const maxLat = this.pickupCoords.lat + 1.5;
-            const maxLon = this.pickupCoords.lon + 1.5;
-            const minLat = this.pickupCoords.lat - 1.5;
-            nomUrl += `&viewbox=${minLon},${maxLat},${maxLon},${minLat}&bounded=0`;
-          }
-          const res = await fetch(nomUrl);
+          const res = await fetch(url);
           const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const valid = data.find((item: any) => item.class !== 'boundary' && item.addresstype !== 'state') || data[0];
-            this.dropCoords = { lat: parseFloat(valid.lat), lon: parseFloat(valid.lon) };
+          if (data && data.features && data.features.length > 0) {
+            const valid = data.features.find((f: any) => f.properties?.osm_key !== 'boundary' && f.properties?.type !== 'county') || data.features[0];
+            this.dropCoords = { lat: valid.geometry.coordinates[1], lon: valid.geometry.coordinates[0] };
           }
         } catch (e) {
-          console.error('Nominatim drop geocode error:', e);
+          console.error('Drop geocode error:', e);
         }
       }
     } catch (e) {

@@ -5,19 +5,9 @@
   <!-- Desktop Header -->
   <header class="desktop-header-banner">
     <div class="desktop-header-logo-block">
-      <!-- Car SVG -->
-      <svg viewBox="0 0 100 60" width="36" height="26" fill="#000000"
-        style="vertical-align: middle; margin-right: 8px;">
-        <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z" />
-        <circle cx="28" cy="48" r="9" fill="#FFCC00" />
-        <circle cx="28" cy="48" r="4" fill="#000" />
-        <circle cx="82" cy="48" r="9" fill="#FFCC00" />
-        <circle cx="82" cy="48" r="4" fill="#000" />
-        <rect x="52" y="19" width="16" height="12" fill="#fff" />
-        <rect x="34" y="19" width="14" height="12" fill="#fff" />
-        <circle cx="18" cy="38" r="3" fill="#fff" />
-        <circle cx="92" cy="38" r="3" fill="#fff" />
-      </svg>
+      <!-- Car Logo Image -->
+      <img src="app-logo.jpg" alt="Tamizh Travels Logo"
+        style="height: 32px; width: 32px; object-fit: cover; border-radius: 6px; margin-right: 10px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" />
       <span class="desktop-brand-title">Tamizh Travels</span>
     </div>
 
@@ -358,9 +348,9 @@
             <svg viewBox="0 0 100 60" width="180" height="110" fill="#bbb" *ngIf="veh.name.includes('Wagon R')">
               <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z"
                 fill="#eee" stroke="#bbb" />
-              <circle cx="28" cy="48" r="9" fill="#FFCC00" />
+              <circle cx="28" cy="48" r="9" fill="#f8bd20" />
               <circle cx="28" cy="48" r="4" fill="#000" />
-              <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+              <circle cx="82" cy="48" r="9" fill="#f8bd20" />
               <circle cx="82" cy="48" r="4" fill="#000" />
               <rect x="52" y="19" width="16" height="12" fill="#fff" />
               <rect x="34" y="19" width="14" height="12" fill="#fff" />
@@ -392,9 +382,6 @@
             <!-- Inclusions ticks list -->
             <div
               style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem; color: #374151; margin-bottom: 1rem;">
-              <div style="display: flex; align-items: center; gap: 0.45rem;">
-                <span style="color: #10b981; font-weight: bold;">✔</span> Driver allowance included
-              </div>
               <div style="display: flex; align-items: center; gap: 0.45rem;">
                 <span style="color: #10b981; font-weight: bold;">✔</span> <strong>{{ selectedTripType === 'Round Trip' ?
                   (distance || 0) * 2 : (distance || 0) }} kms</strong>
@@ -477,18 +464,9 @@
     </div>
 
     <div class="mobile-banner-right">
-      <!-- yellow car logo shape -->
-      <svg viewBox="0 0 100 60" width="56" height="38" fill="#FFCC00">
-        <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z" />
-        <circle cx="28" cy="48" r="9" fill="#000" />
-        <circle cx="28" cy="48" r="4" fill="#FFCC00" />
-        <circle cx="82" cy="48" r="9" fill="#000" />
-        <circle cx="82" cy="48" r="4" fill="#FFCC00" />
-        <rect x="52" y="19" width="16" height="12" fill="#000" />
-        <rect x="34" y="19" width="14" height="12" fill="#000" />
-        <circle cx="18" cy="38" r="3" fill="#fff" />
-        <circle cx="92" cy="38" r="3" fill="#fff" />
-      </svg>
+      <!-- App Logo Image -->
+      <img src="app-logo.jpg" alt="Tamizh Travels Logo"
+        style="height: 48px; width: 48px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); border: 2px solid #000;" />
     </div>
   </div>
 
@@ -506,7 +484,7 @@
       <span *ngIf="activeMobileScreen === 'INPUT'">New Estimate</span>
       <span *ngIf="activeMobileScreen === 'SUMMARY'">Fare Estimate</span>
       <span *ngIf="activeMobileScreen === 'SETTINGS'">Rate Settings</span>
-      <span *ngIf="activeMobileScreen === 'HISTORY'">Recent Estimates</span>
+      <span *ngIf="activeMobileScreen === 'HISTORY'">Recent Activities</span>
     </h3>
 
     <div class="mobile-banner-right-action">
@@ -518,8 +496,8 @@
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
       </button>
-      <button class="mobile-header-icon-btn" *ngIf="activeMobileScreen === 'HISTORY'" (click)="clearAllHistory()"
-        title="Clear all history list items">
+      <button class="mobile-header-icon-btn" *ngIf="activeMobileScreen === 'HISTORY' && historyList.length"
+        (click)="clearAllHistory()" title="Clear all history list items">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"></polyline>
@@ -554,11 +532,11 @@
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
           </div>
-          <div class="mobile-grid-card-title">Recent Estimates</div>
+          <div class="mobile-grid-card-title">Recent Activities</div>
           <div class="mobile-grid-card-desc">View History</div>
         </div>
 
-        <div class="mobile-grid-card" (click)="setMobileScreen('SETTINGS')">
+        <div class="mobile-grid-card hide" (click)="setMobileScreen('SETTINGS')">
           <div class="mobile-grid-card-icon black">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"></circle>
@@ -830,7 +808,7 @@
 
     <!-- Screen 3: Estimate Summary (Select Car View for Mobile) -->
     <div class="mobile-screen-summary-view fade-in" *ngIf="activeMobileScreen === 'SUMMARY'"
-      style="padding: 1rem; box-sizing: border-box; text-align: left;">
+      style="box-sizing: border-box; text-align: left;">
 
       <!-- Top breadcrumb and trip summary header row -->
       <div class="mobile-results-breadcrumbs-header"
@@ -902,8 +880,8 @@
               <svg viewBox="0 0 100 60" width="90" height="60" fill="#bbb" *ngIf="veh.name.includes('Wagon R')">
                 <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z"
                   fill="#eee" stroke="#bbb" />
-                <circle cx="28" cy="48" r="9" fill="#FFCC00" />
-                <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+                <circle cx="28" cy="48" r="9" fill="#f8bd20" />
+                <circle cx="82" cy="48" r="9" fill="#f8bd20" />
               </svg>
               <svg viewBox="0 0 100 60" width="90" height="60" fill="#bbb" *ngIf="veh.name.includes('Etios')">
                 <path d="M10,35 Q30,30 45,15 Q55,15 70,18 Q80,30 95,33 Q100,45 95,52 L5,52 Z" fill="#ddd"
@@ -924,7 +902,6 @@
               </div>
               <div
                 style="font-size: 0.75rem; color: #374151; display: flex; flex-direction: column; gap: 0.2rem; line-height: 1.2;">
-                <div>✔ Driver allowance included</div>
                 <div>✔ <strong>{{ selectedTripType === 'Round Trip' ? (distance || 0) * 2 : (distance || 0) }}
                     km</strong> included</div>
               </div>
@@ -985,7 +962,7 @@
 
     <!-- Screen: Review Booking (Mobile View) -->
     <div class="mobile-screen-review-view fade-in" *ngIf="activeMobileScreen === 'REVIEW'"
-      style="padding: 1rem 1rem 0 1rem; box-sizing: border-box; text-align: left; background: #f8fafc; min-height: 100%;">
+      style="box-sizing: border-box; text-align: left; background: #f8fafc; min-height: 100%;">
 
       <!-- Top Breadcrumbs -->
       <div style="font-size: 0.72rem; color: #6b7280; margin-bottom: 0.75rem;">
@@ -1145,6 +1122,8 @@
               <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem; color: #374151;">
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> Base Fare and Fuel Charges</div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> Driver Allowance (₹300/day included)</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> Night Allowance (₹200 included if active)
+                </div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> GST (5% Included)</div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> 1 bags</div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> AC</div>
@@ -1177,6 +1156,7 @@
           <div *ngIf="showTerms"
             style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.75rem; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280; line-height: 1.4;">
             • Parking and extra state permit fees to be paid to driver directly if applicable.<br />
+            • Night travel allowance applicable between 10:00 PM and 6:00 AM.<br />
             • Free cancellation available up to 1 hour before scheduled pickup time.
           </div>
         </div>
@@ -1352,7 +1332,7 @@
 
       <ng-template #noMobileHistory>
         <div class="mobile-no-history-card">
-          <h3>No Estimates Saved</h3>
+          <h3>No Recent Activities</h3>
           <p>Saved calculations will be listed here.</p>
         </div>
       </ng-template>
@@ -1373,7 +1353,7 @@
       <span class="tab-icon">📋</span>
       <span class="tab-label">Estimates</span>
     </button>
-    <button class="tab-item" [ngClass]="{'active': activeMobileScreen === 'SETTINGS'}"
+    <button class="tab-item hide" [ngClass]="{'active': activeMobileScreen === 'SETTINGS'}"
       (click)="setMobileScreen('SETTINGS')">
       <span class="tab-icon">⚙️</span>
       <span class="tab-label">Settings</span>
@@ -1395,15 +1375,16 @@
       <button class="close-about-btn" (click)="showAboutModal = false">×</button>
     </div>
     <div class="about-modal-body-content">
-      <p><strong>Tamizh Travels</strong> is India's premier cab rental service aggregator. We deliver safe, disinfected,
+      <p><strong>Tamizh Travels</strong> is Tamil Nadu's premier cab rental service aggregator. We deliver safe,
+        disinfected,
         air-conditioned passenger taxis for intercity outstation routes.</p>
       <p style="margin-top: 0.5rem;">Experience direct, transparent rate calculations, zero surprise fees, and
         background-verified drivers for ultimate safety.</p>
       <div
         style="background: var(--light-gray); padding: 0.75rem; border-radius: 8px; margin-top: 1rem; font-size: 0.8rem;">
         <div>📞 <strong>Hotline Support:</strong> +91 95976 73524</div>
-        <div>✉️ <strong>E-mail:</strong> info&#64;tamizhtravels.com</div>
-        <div>📍 <strong>Address:</strong> Sector 6, HSR Layout, Bangalore, India</div>
+        <div>✉️ <strong>E-mail:</strong> travelstamizh&#64;gmail.com</div>
+        <div>📍 <strong>Address:</strong> Puttuthakku, Ranipet, Tamil Nadu, India</div>
       </div>
     </div>
   </div>
@@ -1554,6 +1535,8 @@
               <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem; color: #334155;">
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> Base Fare and Fuel Charges</div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> Driver Allowance (₹300/day included)</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> Night Allowance (₹200 included if active)
+                </div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> GST (5% Included)</div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> 1 bags</div>
                 <div><span style="color: #16a34a; font-weight: 800;">✔</span> AC</div>
@@ -1586,6 +1569,7 @@
           <div *ngIf="showTerms"
             style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b; line-height: 1.4;">
             • Parking and extra state permit fees to be paid to driver directly if applicable.<br />
+            • Night travel allowance applicable between 10:00 PM and 6:00 AM.<br />
             • Free cancellation available up to 1 hour before scheduled pickup time.
           </div>
         </div>
@@ -1725,9 +1709,9 @@
                 *ngIf="selectedVehicle && selectedVehicle.name.includes('Wagon R')" style="margin: 0 auto;">
                 <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z"
                   fill="#eee" stroke="#bbb" />
-                <circle cx="28" cy="48" r="9" fill="#FFCC00" />
+                <circle cx="28" cy="48" r="9" fill="#f8bd20" />
                 <circle cx="28" cy="48" r="4" fill="#000" />
-                <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+                <circle cx="82" cy="48" r="9" fill="#f8bd20" />
                 <circle cx="82" cy="48" r="4" fill="#000" />
               </svg>
               <!-- Render Etios outline SVG in WA message if matched -->

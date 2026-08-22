@@ -128,8 +128,13 @@ This document logs all the design decisions, layout adjustments, API integration
     * Implemented mathematical **Haversine Geographic Distance** (`calculateHaversineDistanceKm`) with realistic Indian road curvature scaling (1.18x - 1.28x) directly in the browser.
     * Added 2.5-second timeout (`AbortController`) to OSRM API calls, seamlessly switching to exact Haversine road distance if the public OSRM server is slow, down, or rate-limited.
     * Replaced the old dummy random number generator in `fallbackMockDistance()` with exact coordinate-based Haversine computation.
-  * **Fare Calculation & Breakdown Simplification**:
-    * Completely removed the Night Allowance (₹200) fee from fare calculations, inclusions list, terms & conditions, and fare breakup drawers on both desktop and mobile review screens.
+  * **Trip Type Tab Bar Visibility**:
+    * Set `.desktop-trip-tabs-bar` and `.mobile-trip-tabs-bar` to `display: none !important;` in `src/app/app.component.css`, hiding the "One Way", "Round Trip", "Local", and "Airport" selector tabs.
+  * **Recent Activities Label Update**:
+    * Updated history headers, dashboard action cards, and empty state cards from "Recent Estimates" / "No Estimates Saved" to **Recent Activities** and **No Recent Activities**.
+  * **Brand Logo & #f8bd20 Theme Color Integration**:
+    * Set `--primary-yellow` in `src/styles.css` to **`#f8bd20`**.
+    * Replaced SVG car icons in desktop & mobile headers and browser favicon with the custom yellow & black car artwork (`app-logo.jpg`).
 
 ---
 
