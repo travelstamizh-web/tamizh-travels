@@ -1,0 +1,1437 @@
+/* =========================================================================
+   DOCK LAYOUT VISIBILITY BINDINGS
+   ========================================================================= */
+@media (min-width: 901px) {
+  .desktop-layout-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f1f5f9;
+  }
+
+  .mobile-layout-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .desktop-layout-container {
+    display: none !important;
+  }
+
+  .mobile-layout-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    position: relative;
+  }
+}
+
+/* =========================================================================
+   DESKTOP SCREEN LAYOUT STYLES
+   ========================================================================= */
+.desktop-header-banner {
+  background-color: var(--primary-yellow);
+  color: #000000;
+  padding: 1rem 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.desktop-header-logo-block {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-brand-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.desktop-header-support {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-header-support svg {
+  color: #000000;
+}
+
+/* Central Card Layout Grid */
+.desktop-estimator-card-panel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 5rem auto;
+  padding: 0 2rem;
+  width: 100%;
+}
+
+/* Premium white interactive calculator card */
+.desktop-form-estimator-card {
+  flex: 1;
+  max-width: 950px;
+  background: var(--white);
+  border-radius: 16px;
+  overflow: visible;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.desktop-form-card-title-bar {
+  background: var(--theme-black);
+  color: var(--white);
+  padding: 0.9rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-align: left;
+  letter-spacing: 0.5px;
+}
+
+.desktop-form-body-wrapper {
+  padding: 1.5rem;
+}
+
+.desktop-form-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.15rem;
+  margin-bottom: 1.5rem;
+}
+
+.desktop-form-input-card {
+  background: var(--white);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.desktop-input-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-medium);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+}
+
+.desktop-input-relative {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.desktop-input-relative svg.marker-pin {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+}
+
+.desktop-input-relative svg.marker-pin.green {
+  color: var(--marker-green);
+}
+
+.desktop-input-relative svg.marker-pin.red {
+  color: var(--marker-red);
+}
+
+.desktop-input {
+  width: 100%;
+  border: none;
+  padding: 2px 0 2px 1.5rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #000000;
+  background: transparent;
+}
+
+.desktop-input:focus {
+  outline: none;
+}
+
+.desktop-input.no-pin {
+  padding-left: 0;
+}
+
+.desktop-input.currency-padding {
+  padding-left: 0.85rem;
+}
+
+.desktop-input-currency {
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.desktop-input-unit {
+  position: absolute;
+  right: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-medium);
+}
+
+.desktop-submit-cta-btn {
+  background: var(--theme-black);
+  color: var(--white);
+  border: none;
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: var(--transition-smooth);
+}
+
+.desktop-submit-cta-btn:hover {
+  background: var(--theme-black-hover);
+  transform: translateY(-1px);
+}
+
+/* Total Fare right summary card */
+.desktop-results-summary-card {
+  flex: 1;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2.25rem 1.75rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 380px;
+}
+
+.desktop-results-header-tag {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.desktop-results-price-badge-box {
+  background: var(--primary-yellow);
+  color: var(--theme-black);
+  font-size: 2.3rem;
+  font-weight: 900;
+  padding: 0.35rem 2rem;
+  border-radius: 8px;
+  margin: 1.25rem 0;
+  min-width: 180px;
+  text-align: center;
+}
+
+.desktop-results-vehicle-display-box {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.desktop-results-car-img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.desktop-whatsapp-cta-btn-green {
+  background: #22c55e;
+  color: var(--white);
+  border: none;
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+.desktop-whatsapp-cta-btn-green:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================================
+   MOBILE SCREEN LAYOUT STYLES
+   ========================================================================= */
+
+/* Top bar indicators spacing */
+.mobile-screen-status-bar {
+  background: var(--theme-black);
+  color: var(--white);
+  height: 32px;
+  padding: 0 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 100;
+}
+
+/* Dashboard Arc Banner (Yellow & White logotype) */
+.mobile-dashboard-arc-banner {
+  background: var(--theme-black);
+  color: var(--white);
+  height: 200px;
+  padding: 3rem 1.5rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom-left-radius: 30% 25px;
+  border-bottom-right-radius: 30% 25px;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-banner-left {
+  text-align: left;
+}
+
+.mobile-brand-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--primary-yellow);
+  line-height: 1;
+}
+
+.mobile-brand-subtitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 1px;
+}
+
+.mobile-brand-slogan-tag {
+  font-size: 0.8rem;
+  color: var(--white);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Sub-screen Yellow Banner Header */
+.mobile-screen-title-banner {
+  background: var(--primary-yellow);
+  color: var(--theme-black);
+  padding: 2.25rem 1rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-banner-back-btn {
+  background: none;
+  border: none;
+  color: var(--theme-black);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-banner-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.mobile-banner-right-action {
+  width: 32px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mobile-header-icon-btn {
+  background: none;
+  border: none;
+  color: var(--theme-black);
+  cursor: pointer;
+  padding: 2px;
+}
+
+/* Scroll area container */
+.mobile-screen-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+  padding-bottom: 75px;
+  /* space for bottom nav bar */
+}
+
+/* Dashboard Action Cards grid */
+.mobile-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.mobile-grid-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  transition: var(--transition-smooth);
+}
+
+.mobile-grid-card:hover {
+  border-color: var(--primary-yellow);
+}
+
+.mobile-grid-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-grid-card-icon.red {
+  background: #fef2f2;
+  color: var(--marker-red);
+}
+
+.mobile-grid-card-icon.yellow {
+  background: var(--primary-yellow-light);
+  color: var(--primary-yellow-hover);
+}
+
+.mobile-grid-card-icon.black {
+  background: #f4f4f5;
+  color: var(--theme-black);
+}
+
+.mobile-grid-card-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--theme-black);
+  margin-top: 0.75rem;
+}
+
+.mobile-grid-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-medium);
+  margin-top: 2px;
+}
+
+/* Support badges */
+.mobile-support-pill-box {
+  background: var(--primary-yellow);
+  color: var(--theme-black);
+  padding: 0.95rem;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(255, 204, 0, 0.12);
+}
+
+.mobile-call-hotline-btn {
+  background: var(--theme-black);
+  color: var(--white);
+  border: none;
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  margin-top: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile input form card fields */
+.mobile-form-input-card {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--card-shadow);
+  text-align: left;
+  position: relative;
+}
+
+.mobile-input-label-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-medium);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  letter-spacing: 0.5px;
+}
+
+.mobile-input-relative-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-input-relative-box svg.marker {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+}
+
+.mobile-input-relative-box svg.marker.green {
+  color: var(--marker-green);
+}
+
+.mobile-input-relative-box svg.marker.red {
+  color: var(--marker-red);
+}
+
+.mobile-input {
+  width: 100%;
+  border: none;
+  padding: 3px 1.75rem 3px 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--theme-black);
+  background: transparent;
+}
+
+.mobile-input:focus {
+  outline: none;
+}
+
+.mobile-input.no-icon {
+  padding-left: 0;
+}
+
+.mobile-input-relative-box button.gps {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.mobile-input-relative-box span.unit-tag {
+  position: absolute;
+  right: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-medium);
+}
+
+.mobile-form-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.mobile-black-cta-btn {
+  background: var(--theme-black);
+  color: var(--primary-yellow);
+  border: none;
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+/* Mobile summary estimate screen */
+.mobile-summary-brand-row {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-summary-brand-row h4 {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--theme-black);
+}
+
+.mobile-summary-brand-row span {
+  font-size: 0.72rem;
+  color: var(--text-medium);
+}
+
+.mobile-summary-car-box {
+  background: var(--white);
+  border-radius: 12px;
+  height: 140px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mobile-summary-car-img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.mobile-summary-route-card {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.15rem;
+  box-shadow: var(--card-shadow);
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+.mobile-summary-route-card h5 {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-medium);
+  margin-bottom: 0.75rem;
+}
+
+.mobile-route-bullets-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.bullet-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bullet-row span.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.bullet-row span.dot.green {
+  background: var(--marker-green);
+}
+
+.bullet-row span.dot.red {
+  background: var(--marker-red);
+}
+
+.bullet-row span.location-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.timeline-line {
+  width: 1px;
+  height: 10px;
+  background: var(--border-color);
+  margin-left: 3px;
+}
+
+.mobile-route-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.mobile-route-pricing-table td {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--light-gray);
+  font-size: 0.82rem;
+  color: var(--text-medium);
+}
+
+.mobile-route-pricing-table td.bold {
+  text-align: right;
+  font-weight: 700;
+  color: var(--theme-black);
+}
+
+.mobile-summary-total-fare-badge {
+  background: var(--primary-yellow);
+  color: var(--theme-black);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+}
+
+.mobile-summary-total-fare-badge span.price-val {
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.mobile-summary-disclaimer {
+  font-size: 0.68rem;
+  color: var(--text-light);
+  text-align: center;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.mobile-summary-actions-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mobile-white-save-btn {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.85rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-green-whatsapp-btn {
+  flex: 1.5;
+  background: #22c55e;
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  padding: 0.85rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.mobile-toast-success-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* Rate Settings screen options lists */
+.mobile-settings-section-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-medium);
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.mobile-vehicle-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-radio-label-item {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--card-shadow);
+}
+
+.mobile-radio-label-item input {
+  accent-color: var(--theme-black);
+}
+
+.mobile-radio-label-item.active {
+  border-color: var(--primary-yellow);
+  background: #fffdf9;
+  color: var(--theme-black);
+}
+
+/* History lists cards */
+.mobile-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-history-card {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: left;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+}
+
+.mobile-history-card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.mobile-history-card-header-row span.route-title {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.delete-trash-btn {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.delete-trash-btn:hover {
+  color: var(--marker-red);
+}
+
+.mobile-history-card-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-history-card-details-row span.dist-tag {
+  background: var(--light-gray);
+  padding: 1px 6px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-medium);
+}
+
+.mobile-history-card-details-row span.price-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.mobile-history-card-date {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.mobile-no-history-card {
+  padding: 3rem 1rem;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+  box-shadow: var(--card-shadow);
+}
+
+/* Bottom Tab Navbar bar */
+.mobile-bottom-tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: var(--theme-black);
+  display: flex;
+  border-top: 1px solid #222222;
+  z-index: 100;
+}
+
+.tab-item {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #777777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tab-item.active {
+  color: var(--primary-yellow);
+}
+
+.tab-icon {
+  font-size: 1.15rem;
+  margin-bottom: 1px;
+}
+
+.tab-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================================
+   SHARED OVERLAY MODALS (About corporate, WhatsApp Share preview bubble)
+   ========================================================================= */
+.shared-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* About corporate box */
+.about-modal-card-box {
+  background: var(--white);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: modalScale 0.25s ease-out;
+}
+
+.about-modal-header-banner {
+  background: var(--primary-yellow);
+  color: var(--theme-black);
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.about-modal-header-banner h4 {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.close-about-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.about-modal-body-content {
+  padding: 1.25rem;
+  text-align: left;
+  font-size: 0.82rem;
+  color: var(--text-medium);
+}
+
+/* WhatsApp chat bubble drawer panel */
+.whatsapp-dialog-preview-box {
+  width: 375px;
+  height: 640px;
+  background: #ece5dd url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png') repeat;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  animation: modalScale 0.25s ease-out;
+}
+
+@keyframes modalScale {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.whatsapp-dialog-header {
+  background: #075e54;
+  height: 64px;
+  color: var(--white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.avatar-row-details {
+  display: flex;
+  align-items: center;
+}
+
+.wa-back-btn {
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  margin-right: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.avatar-icon-circle {
+  width: 34px;
+  height: 34px;
+  background: var(--primary-yellow);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-right: 6px;
+}
+
+.wa-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: left;
+}
+
+.wa-sub-online {
+  font-size: 0.68rem;
+  color: #dfefdf;
+  text-align: left;
+}
+
+.header-call-svgs {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Chat container stream */
+.whatsapp-dialog-messages-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-message-bubble-right-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chat-bubble-estimate-card {
+  background: #dcf8c6;
+  border-radius: 8px;
+  padding: 6px;
+  max-width: 85%;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.wa-estimate-card-inner {
+  background: var(--white);
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 0.6rem;
+  text-align: left;
+}
+
+.wa-card-header-yellow-banner {
+  background: var(--theme-black);
+  color: var(--white);
+  padding: 4px 6px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wa-card-header-yellow-banner strong {
+  color: var(--primary-yellow);
+  font-size: 0.75rem;
+}
+
+.wa-card-header-yellow-banner span {
+  font-size: 0.58rem;
+}
+
+.wa-card-photo-panel {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  margin: 5px 0;
+}
+
+.wa-card-photo-panel img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.wa-card-title-bold {
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.wa-card-breakdown-details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wa-card-breakdown-details-table td {
+  padding: 1px 0;
+  font-size: 0.72rem;
+  font-family: monospace;
+}
+
+.wa-card-breakdown-details-table .lbl {
+  color: #666;
+  width: 60px;
+}
+
+.wa-card-breakdown-details-table .val {
+  font-weight: 700;
+}
+
+.wa-card-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--primary-yellow);
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-weight: 800;
+}
+
+.wa-card-total-row .lbl-tot {
+  font-size: 0.72rem;
+}
+
+.wa-card-total-row .val-tot {
+  font-size: 0.9rem;
+}
+
+.wa-card-footer-slogan {
+  font-size: 0.68rem;
+  line-height: 1.3;
+  margin-top: 5px;
+}
+
+.chat-bubble-ticks-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.chat-bubble-ticks-row .time-stamp {
+  font-size: 0.62rem;
+  color: #666666;
+}
+
+.chat-bubble-ticks-row .read-checkmarks-green {
+  color: #34b7f1;
+  font-weight: 700;
+  font-size: 0.68rem;
+}
+
+/* whatsapp inputs footer */
+.whatsapp-dialog-footer-input {
+  background: #f0f0f0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.wa-input-field {
+  flex: 1;
+  background: var(--white);
+  border: none;
+  height: 32px;
+  border-radius: 20px;
+  padding: 0 0.85rem;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+/* --- GPS TARGET ALIGNMENT & AUTOCOMPLETE STYLING --- */
+.desktop-gps-btn {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 0.5rem;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.desktop-gps-btn:hover {
+  transform: scale(1.15);
+}
+
+.desktop-autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1200;
+  margin-top: 4px;
+}
+
+.desktop-autocomplete-item {
+  padding: 0.6rem 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition-smooth);
+  border-bottom: 1px solid #f8fafc;
+  text-align: left;
+}
+
+.desktop-autocomplete-item:hover {
+  background-color: var(--primary-yellow-light);
+}
+
+.desktop-autocomplete-item .pin-symbol {
+  color: var(--primary-yellow-hover);
+}
+
+.desktop-autocomplete-item .name-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-dark);
+}
+
+/* Mobile autocomplete items */
+.mobile-autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1100;
+  margin-top: 4px;
+}
+
+.mobile-autocomplete-item {
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #f4f4f5;
+  text-align: left;
+}
+
+.mobile-autocomplete-item:hover {
+  background-color: #fffdf5;
+}
+
+.mobile-autocomplete-item .pin {
+  color: var(--primary-yellow-hover);
+}
+
+.mobile-autocomplete-item .label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--theme-black);
+}
+
+/* --- FIELD LOADERS ANIMATION SPINNERS --- */
+.desktop-input-loader {
+  position: absolute;
+  right: 0.5rem;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e4e4e7;
+  border-top: 2px solid var(--theme-black);
+  border-radius: 50%;
+  animation: field-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+.mobile-input-loader {
+  position: absolute;
+  right: 0.5rem;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e4e4e7;
+  border-top: 2px solid var(--theme-black);
+  border-radius: 50%;
+  animation: field-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes field-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- TRIP TYPE TABS STYLES --- */
+.desktop-trip-tabs-bar {
+  display: flex;
+  background: rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.desktop-trip-tab-btn {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 0.95rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.desktop-trip-tab-btn:last-child {
+  border-right: none;
+}
+
+.desktop-trip-tab-btn:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.desktop-trip-tab-btn.active {
+  background: var(--theme-black);
+  color: var(--primary-yellow);
+}
+
+.mobile-trip-tabs-bar {
+  display: flex;
+  background: var(--white);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 0.85rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+
+.mobile-trip-tab-btn {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 0.65rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-medium);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-trip-tab-btn.active {
+  background: var(--theme-black);
+  color: var(--primary-yellow);
+}
+
+/* --- SWAP LOCATIONS BUTTON STYLES --- */
+.desktop-swap-btn {
+  background: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-black);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: auto 0.25rem;
+  transition: all 0.25s ease;
+  user-select: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.desktop-swap-btn:hover {
+  background: var(--primary-yellow);
+  border-color: var(--primary-yellow-hover);
+  transform: rotate(180deg);
+}
+
+/* --- BOOKING REVIEW CONFIRMATION MODAL STYLES --- */
+@media (max-width: 900px) {
+  .desktop-booking-modal-overlay {
+    display: none !important;
+  }
+
+  .booking-review-columns-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .booking-review-modal-box {
+    padding: 1rem !important;
+    max-height: 95vh !important;
+  }
+}
+
+.hide {
+  display: none !important;
+}

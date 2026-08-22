@@ -1,0 +1,1851 @@
+<!-- =========================================================================
+     DESKTOP LAYOUT CONTROLLER (Visible on viewports > 900px)
+     ========================================================================= -->
+<div class="desktop-layout-container fade-in">
+  <!-- Desktop Header -->
+  <header class="desktop-header-banner">
+    <div class="desktop-header-logo-block">
+      <!-- Car SVG -->
+      <svg viewBox="0 0 100 60" width="36" height="26" fill="#000000"
+        style="vertical-align: middle; margin-right: 8px;">
+        <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z" />
+        <circle cx="28" cy="48" r="9" fill="#FFCC00" />
+        <circle cx="28" cy="48" r="4" fill="#000" />
+        <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+        <circle cx="82" cy="48" r="4" fill="#000" />
+        <rect x="52" y="19" width="16" height="12" fill="#fff" />
+        <rect x="34" y="19" width="14" height="12" fill="#fff" />
+        <circle cx="18" cy="38" r="3" fill="#fff" />
+        <circle cx="92" cy="38" r="3" fill="#fff" />
+      </svg>
+      <span class="desktop-brand-title">Tamizh Travels</span>
+    </div>
+
+    <div class="desktop-header-support" (click)="triggerDirectCall()" style="cursor: pointer;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;">
+        <path
+          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+        </path>
+      </svg>
+      <div style="display: inline-block; text-align: left; vertical-align: middle; line-height: 1.2;">
+        <span style="font-size: 0.75rem; color: #4b5563; display: block; font-weight: 500;">Phone support</span>
+        <span style="font-weight: 800; font-size: 1rem; color: #000000;">+91 95976 73524</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Desktop Main Estimator workspace card -->
+  <main class="desktop-estimator-card-panel" *ngIf="activeDesktopScreen === 'SEARCH'">
+
+    <!-- Left column form container -->
+    <div class="desktop-form-estimator-card">
+      <div class="desktop-form-card-title-bar">
+        Interactive Trip Fare Estimator
+      </div>
+
+      <!-- Desktop Trip type selection tabs -->
+      <div class="desktop-trip-tabs-bar">
+        <button type="button" class="desktop-trip-tab-btn" [class.active]="selectedTripType === 'One Way'"
+          (click)="selectTripType('One Way')">One Way</button>
+        <button type="button" class="desktop-trip-tab-btn" [class.active]="selectedTripType === 'Round Trip'"
+          (click)="selectTripType('Round Trip')">Round Trip</button>
+        <button type="button" class="desktop-trip-tab-btn" [class.active]="selectedTripType === 'Local'"
+          (click)="selectTripType('Local')">Local</button>
+        <button type="button" class="desktop-trip-tab-btn" [class.active]="selectedTripType === 'Airport'"
+          (click)="selectTripType('Airport')">Airport</button>
+      </div>
+
+      <div class="desktop-form-body-wrapper">
+        <form (submit)="calculateFare(); $event.preventDefault();">
+          <div class="desktop-form-fields-grid">
+
+            <!-- Dynamic Fields Row -->
+            <div class="desktop-main-inputs-row"
+              style="display: flex; width: 100%; gap: 0.85rem; align-items: stretch; margin-bottom: 1.5rem; flex-wrap: wrap;">
+
+              <!-- CITY (for LOCAL) -->
+              <div class="desktop-form-input-card" style="flex: 2; min-width: 200px;"
+                *ngIf="selectedTripType === 'Local'">
+                <label class="desktop-input-label">CITY</label>
+                <div class="desktop-input-relative" style="display: flex; align-items: center;">
+                  <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
+                  <input type="text" [ngModel]="pickupLocation"
+                    (ngModelChange)="fetchLocationSuggestions($event, 'pickup')" name="pickupLocation"
+                    class="desktop-input"
+                    style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
+                    autocomplete="off" placeholder="Start typing city or area" />
+                  <span class="desktop-input-loader" *ngIf="isLoadingPickup" style="margin-left: 0.5rem;"></span>
+                </div>
+
+                <div class="desktop-autocomplete-dropdown"
+                  *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+                  <div class="desktop-autocomplete-item" *ngFor="let item of pickupSuggestions"
+                    (click)="selectGeocodedLocation(item, 'pickup')">
+                    <span class="pin-symbol">📍</span>
+                    <span class="name-label">{{item.display_name}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TRIP (for AIRPORT) -->
+              <div class="desktop-form-input-card" style="flex: 1.2; min-width: 150px;"
+                *ngIf="selectedTripType === 'Airport'">
+                <label class="desktop-input-label">TRIP</label>
+                <div class="desktop-input-relative" style="display: flex; align-items: center;">
+                  <select [(ngModel)]="airportTripType" name="airportTripType" class="desktop-input"
+                    style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; cursor: pointer;">
+                    <option value="Drop to Airport">Drop to Airport</option>
+                    <option value="Pickup from Airport">Pickup from Airport</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- FROM (for ONE WAY and ROUND TRIP) -->
+              <div class="desktop-form-input-card" style="flex: 2; min-width: 200px;"
+                *ngIf="selectedTripType === 'One Way' || selectedTripType === 'Round Trip'">
+                <label class="desktop-input-label">FROM</label>
+                <div class="desktop-input-relative" style="display: flex; align-items: center;">
+                  <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
+                  <input type="text" [ngModel]="pickupLocation"
+                    (ngModelChange)="fetchLocationSuggestions($event, 'pickup')" name="pickupLocation"
+                    class="desktop-input"
+                    style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
+                    autocomplete="off" placeholder="Start typing departure city" />
+                  <span class="desktop-input-loader" *ngIf="isLoadingPickup" style="margin-left: 0.5rem;"></span>
+                </div>
+
+                <div class="desktop-autocomplete-dropdown"
+                  *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+                  <div class="desktop-autocomplete-item" *ngFor="let item of pickupSuggestions"
+                    (click)="selectGeocodedLocation(item, 'pickup')">
+                    <span class="pin-symbol">📍</span>
+                    <span class="name-label">{{item.display_name}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PICKUP ADDRESS / AIRPORT (for AIRPORT) -->
+              <div class="desktop-form-input-card" style="flex: 2; min-width: 200px;"
+                *ngIf="selectedTripType === 'Airport'">
+                <label class="desktop-input-label">{{ airportTripType === 'Drop to Airport' ? 'PICKUP ADDRESS' : 'PICKUP
+                  AIRPORT' }}</label>
+                <div class="desktop-input-relative" style="display: flex; align-items: center;">
+                  <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
+                  <input type="text" [ngModel]="pickupLocation"
+                    (ngModelChange)="fetchLocationSuggestions($event, 'pickup')" name="pickupLocation"
+                    class="desktop-input"
+                    style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
+                    autocomplete="off"
+                    [placeholder]="airportTripType === 'Drop to Airport' ? 'Enter pickup location' : 'Enter airport name'" />
+                  <span class="desktop-input-loader" *ngIf="isLoadingPickup" style="margin-left: 0.5rem;"></span>
+                </div>
+
+                <div class="desktop-autocomplete-dropdown"
+                  *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+                  <div class="desktop-autocomplete-item" *ngFor="let item of pickupSuggestions"
+                    (click)="selectGeocodedLocation(item, 'pickup')">
+                    <span class="pin-symbol">📍</span>
+                    <span class="name-label">{{item.display_name}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SWAP BUTTON (for ONE WAY and ROUND TRIP) -->
+              <button type="button" class="desktop-swap-btn" (click)="swapLocations()"
+                *ngIf="selectedTripType === 'One Way' || selectedTripType === 'Round Trip'" title="Swap locations">
+                ⇄
+              </button>
+
+              <!-- TO (for ONE WAY and ROUND TRIP) -->
+              <div class="desktop-form-input-card" style="flex: 2; min-width: 200px;"
+                *ngIf="selectedTripType === 'One Way' || selectedTripType === 'Round Trip'">
+                <label class="desktop-input-label">TO</label>
+                <div class="desktop-input-relative" style="display: flex; align-items: center;">
+                  <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
+                  <input type="text" [ngModel]="dropLocation" (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
+                    name="dropLocation" class="desktop-input"
+                    style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
+                    autocomplete="off" placeholder="Start typing destination city" />
+                  <span class="desktop-input-loader" *ngIf="isLoadingDrop" style="margin-left: 0.5rem;"></span>
+                </div>
+
+                <div class="desktop-autocomplete-dropdown"
+                  *ngIf="activeSuggestionField === 'drop' && dropSuggestions.length > 0">
+                  <div class="desktop-autocomplete-item" *ngFor="let item of dropSuggestions"
+                    (click)="selectGeocodedLocation(item, 'drop')">
+                    <span class="pin-symbol">📍</span>
+                    <span class="name-label">{{item.display_name}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DROP ADDRESS / AIRPORT (for AIRPORT) -->
+              <div class="desktop-form-input-card" style="flex: 2; min-width: 200px;"
+                *ngIf="selectedTripType === 'Airport'">
+                <label class="desktop-input-label">{{ airportTripType === 'Drop to Airport' ? 'DROP AIRPORT' : 'DROP
+                  ADDRESS' }}</label>
+                <div class="desktop-input-relative" style="display: flex; align-items: center;">
+                  <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
+                  <input type="text" [ngModel]="dropLocation" (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
+                    name="dropLocation" class="desktop-input"
+                    style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
+                    autocomplete="off"
+                    [placeholder]="airportTripType === 'Drop to Airport' ? 'Enter airport name' : 'Enter drop destination'" />
+                  <span class="desktop-input-loader" *ngIf="isLoadingDrop" style="margin-left: 0.5rem;"></span>
+                </div>
+
+                <div class="desktop-autocomplete-dropdown"
+                  *ngIf="activeSuggestionField === 'drop' && dropSuggestions.length > 0">
+                  <div class="desktop-autocomplete-item" *ngFor="let item of dropSuggestions"
+                    (click)="selectGeocodedLocation(item, 'drop')">
+                    <span class="pin-symbol">📍</span>
+                    <span class="name-label">{{item.display_name}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PICK UP DATE -->
+              <div class="desktop-form-input-card" style="flex: 1.2; min-width: 140px;">
+                <label class="desktop-input-label">PICK UP DATE</label>
+                <div class="desktop-input-relative">
+                  <input type="date" [(ngModel)]="pickupDate" name="pickupDate" class="desktop-input"
+                    style="border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; width: 100%; cursor: pointer;" />
+                </div>
+              </div>
+
+              <!-- RETURN DATE (only for ROUND TRIP) -->
+              <div class="desktop-form-input-card" style="flex: 1.2; min-width: 140px;"
+                *ngIf="selectedTripType === 'Round Trip'">
+                <label class="desktop-input-label">RETURN DATE</label>
+                <div class="desktop-input-relative">
+                  <input type="date" [(ngModel)]="returnDate" name="returnDate" class="desktop-input"
+                    style="border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; width: 100%; cursor: pointer;" />
+                </div>
+              </div>
+
+              <!-- PICK UP TIME -->
+              <div class="desktop-form-input-card" style="flex: 1.2; min-width: 120px;">
+                <label class="desktop-input-label">PICK UP TIME</label>
+                <div class="desktop-input-relative">
+                  <input type="time" [(ngModel)]="pickupTime" name="pickupTime" class="desktop-input"
+                    style="border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; width: 100%; cursor: pointer;" />
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Overrides Heading divider -->
+            <div
+              style="display: none; grid-column: 1 / -1; font-size: 0.72rem; font-weight: 800; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 4px; margin: 0.5rem 0 1rem 0; text-align: left;">
+              Fare Estimator Math Overrides
+            </div>
+
+            <div class="desktop-form-fields-grid"
+              style="display: none; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; width: 100%; grid-column: 1 / -1; margin-bottom: 1rem;">
+              <div class="desktop-form-input-card">
+                <label class="desktop-input-label">Distance</label>
+                <div class="desktop-input-relative">
+                  <input type="number" [(ngModel)]="distance" name="distance" class="desktop-input no-pin" />
+                  <span class="desktop-input-unit">km</span>
+                </div>
+              </div>
+
+              <div class="desktop-form-input-card">
+                <label class="desktop-input-label">Rate per KM</label>
+                <div class="desktop-input-relative">
+                  <span class="desktop-input-currency">₹</span>
+                  <input type="number" step="0.5" [(ngModel)]="ratePerKm" name="ratePerKm"
+                    class="desktop-input currency-padding" />
+                </div>
+              </div>
+
+              <div class="desktop-form-input-card">
+                <label class="desktop-input-label">Base Fare</label>
+                <div class="desktop-input-relative">
+                  <span class="desktop-input-currency">₹</span>
+                  <input type="number" [(ngModel)]="baseFare" name="baseFare" class="desktop-input currency-padding" />
+                </div>
+              </div>
+
+              <div class="desktop-form-input-card">
+                <label class="desktop-input-label">Toll/Parking</label>
+                <div class="desktop-input-relative">
+                  <span class="desktop-input-currency">₹</span>
+                  <input type="number" [(ngModel)]="tollParking" name="tollParking"
+                    class="desktop-input currency-padding" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <button type="submit" class="desktop-submit-cta-btn" [disabled]="isLocating"
+            style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; padding: 0.85rem 2.5rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.15);"
+            onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
+            {{ isLocating ? 'SEARCHING REAL ROUTES...' : 'EXPLORE CABS' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Desktop Results Page (Select Car View) -->
+  <div class="desktop-results-view-container" *ngIf="activeDesktopScreen === 'RESULTS'"
+    style="max-width: 1100px; margin: 2rem auto; padding: 0 2rem; text-align: left; width: 100%; box-sizing: border-box;">
+
+    <!-- Top breadcrumb and trip summary header row -->
+    <div class="desktop-results-breadcrumbs-header"
+      style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+      <div>
+        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><a href="javascript:void(0)"
+            (click)="goHome()"
+            style="color: #3b82f6; text-decoration: none; font-weight: 600; cursor: pointer;">Home</a> &gt; Select Car
+        </div>
+        <h2 style="font-size: 1.45rem; font-weight: 800; color: #111827; margin: 0;">{{ pickupLocation }} - {{
+          dropLocation || 'Local Package' }}</h2>
+      </div>
+      <div style="display: flex; gap: 2rem; align-items: center;">
+        <div style="text-align: center;">
+          <span
+            style="font-size: 0.72rem; color: #6b7280; text-transform: uppercase; font-weight: 600; display: block;">Trip
+            Type</span>
+          <span style="font-weight: 800; font-size: 0.95rem; color: #111827;">{{ selectedTripType }}</span>
+        </div>
+        <div style="text-align: center;">
+          <span
+            style="font-size: 0.72rem; color: #6b7280; text-transform: uppercase; font-weight: 600; display: block;">Pick
+            up</span>
+          <span style="font-weight: 800; font-size: 0.95rem; color: #111827;">{{ getFormattedDate(pickupDate) }}</span>
+        </div>
+        <div style="text-align: center;">
+          <span
+            style="font-size: 0.72rem; color: #6b7280; text-transform: uppercase; font-weight: 600; display: block;">Time</span>
+          <span style="font-weight: 800; font-size: 0.95rem; color: #111827;">{{ getFormattedTime(pickupTime) }}</span>
+        </div>
+        <button class="desktop-modify-booking-btn" (click)="activeDesktopScreen = 'SEARCH'"
+          style="border: 2px solid #3b82f6; background: transparent; color: #3b82f6; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1.1rem; border-radius: 20px; cursor: pointer; transition: all 0.2s;">Modify
+          Booking</button>
+      </div>
+    </div>
+
+    <!-- Blue Promotional Banner Bar -->
+    <div class="desktop-promo-banner-bar"
+      style="background: #1d4ed8; color: white; display: flex; justify-content: space-around; padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 700; font-size: 0.88rem; align-items: center; box-shadow: 0 4px 12px rgba(29, 78, 216, 0.15);">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.15rem;">₹</span> Book Now at Zero Cost
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.15rem;">🚫</span> Free Cancellations Upto 1 Hour
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.15rem;">🎧</span> 24x7 Customer Support
+      </div>
+    </div>
+
+    <!-- Vehicle Cards List -->
+    <div class="desktop-vehicles-list-wrapper"
+      style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 3rem;">
+      <div class="desktop-vehicle-card" *ngFor="let veh of vehiclesList"
+        style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all 0.2s;"
+        [style.opacity]="veh.disabled ? '0.65' : '1'">
+
+        <div style="display: flex; padding: 1.5rem; gap: 2rem; align-items: stretch;">
+          <!-- Left: Car Image -->
+          <div
+            style="flex: 1; max-width: 240px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 8px; padding: 0.5rem;">
+            <!-- Render custom car svg or image based on name -->
+            <svg viewBox="0 0 100 60" width="180" height="110" fill="#bbb" *ngIf="veh.name.includes('Wagon R')">
+              <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z"
+                fill="#eee" stroke="#bbb" />
+              <circle cx="28" cy="48" r="9" fill="#FFCC00" />
+              <circle cx="28" cy="48" r="4" fill="#000" />
+              <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+              <circle cx="82" cy="48" r="4" fill="#000" />
+              <rect x="52" y="19" width="16" height="12" fill="#fff" />
+              <rect x="34" y="19" width="14" height="12" fill="#fff" />
+            </svg>
+            <svg viewBox="0 0 100 60" width="180" height="110" fill="#bbb" *ngIf="veh.name.includes('Etios')">
+              <path d="M10,35 Q30,30 45,15 Q55,15 70,18 Q80,30 95,33 Q100,45 95,52 L5,52 Z" fill="#ddd" stroke="#bbb" />
+              <circle cx="25" cy="50" r="9" fill="#555" />
+              <circle cx="75" cy="50" r="9" fill="#555" />
+            </svg>
+            <img [src]="veh.image" alt="Swift Dzire"
+              style="width: auto; max-width: 100%; max-height: 110px; object-fit: contain; mix-blend-mode: multiply; border-radius: 4px;"
+              *ngIf="veh.name.includes('Dzire')" />
+            <!-- Yellow car model placeholder as fallback -->
+            <img src="yellow-car.png" alt="Yellow Cab" style="width: 160px; height: auto;"
+              *ngIf="!veh.name.includes('Wagon R') && !veh.name.includes('Etios') && !veh.name.includes('Dzire')" />
+          </div>
+
+          <!-- Middle-left: Details -->
+          <div style="flex: 2.2; display: flex; flex-direction: column; text-align: left;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #111827; margin: 0;">{{ veh.name }}</h3>
+              <span
+                style="background: #111827; color: var(--primary-yellow); font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">{{
+                veh.rating }}</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #6b7280; font-weight: 500; margin-bottom: 0.75rem;">{{ veh.desc }}
+            </div>
+
+            <!-- Inclusions ticks list -->
+            <div
+              style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem; color: #374151; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.45rem;">
+                <span style="color: #10b981; font-weight: bold;">✔</span> Driver allowance included
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.45rem;">
+                <span style="color: #10b981; font-weight: bold;">✔</span> <strong>{{ selectedTripType === 'Round Trip' ?
+                  (distance || 0) * 2 : (distance || 0) }} kms</strong>
+                included(Up & Down) | Post limit: <strong>₹{{ getDynamicRatePerKm(veh, selectedTripType === 'Round Trip'
+                  ?
+                  (distance || 0) * 2 : (distance || 0)) }}/km</strong>
+              </div>
+            </div>
+
+            <!-- Fuel Type Selection -->
+            <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.82rem; margin-bottom: 0.5rem;">
+              <span style="font-weight: 700; color: #4b5563;">Select Fuel Type</span>
+              <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; font-weight: 600;">
+                <input type="radio" [name]="'fuel-' + veh.name"
+                  [checked]="veh.fuelType === 'CNG' || veh.fuelType === 'Petrol'" (change)="veh.fuelType = 'CNG'"
+                  [disabled]="veh.disabled" /> CNG/Petrol
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; font-weight: 600;"
+                *ngIf="veh.name.includes('Crysta')">
+                <input type="radio" [name]="'fuel-' + veh.name" [checked]="veh.fuelType === 'Diesel'"
+                  (change)="veh.fuelType = 'Diesel'" [disabled]="veh.disabled" /> Diesel
+              </label>
+            </div>
+
+            <a href="javascript:void(0)"
+              style="font-size: 0.78rem; color: #3b82f6; font-weight: 700; text-decoration: none;">Inclusions and
+              Exclusions ∨</a>
+          </div>
+
+          <!-- Right: Fares and Explore -->
+          <div
+            style="flex: 1.2; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; text-align: right; border-left: 1px dashed #e5e7eb; padding-left: 1.5rem;">
+            <div>
+              <div style="font-size: 0.75rem; color: #10b981; font-weight: 800; margin-bottom: 0.25rem;">
+                <span style="background: #ecfdf5; padding: 2px 6px; border-radius: 4px;">🏷️ 12% OFF</span>
+                <span style="text-decoration: line-through; color: #9ca3af; margin-left: 0.5rem;">₹{{
+                  getVehicleOriginalFare(veh) | number:'1.0-0' }}</span>
+              </div>
+              <div style="font-size: 1.85rem; font-weight: 800; color: #1d4ed8; line-height: 1;">
+                ₹{{ getVehicleFare(veh) | number:'1.0-0' }}
+              </div>
+              <div style="font-size: 0.72rem; color: #4b5563; font-weight: 600; margin-top: 2px;">
+                (incl. GST, Tolls/Parking Extra)
+              </div>
+            </div>
+
+            <button (click)="selectVehicle(veh)" [disabled]="veh.disabled"
+              [style.background]="veh.disabled ? '#9ca3af' : '#f26b28'"
+              [style.cursor]="veh.disabled ? 'not-allowed' : 'pointer'" [style.opacity]="veh.disabled ? '0.7' : '1'"
+              [style.box-shadow]="veh.disabled ? 'none' : '0 4px 10px rgba(242,107,40,0.15)'"
+              style="color: white; border: none; font-weight: 800; font-size: 0.95rem; width: 100%; padding: 0.75rem 1.5rem; border-radius: 6px; transition: all 0.2s;">
+              {{ veh.disabled ? 'UNAVAILABLE' : 'SELECT CAR' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Blue luggage carrier footer row -->
+        <div
+          style="background: #e0f2fe; color: #0369a1; padding: 0.45rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 700; border-top: 1px solid #bae6fd;">
+          <span>🚙</span> Cab with Luggage Carrier &#64; ₹149
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     MOBILE LAYOUT CONTROLLER (Visible on viewports <= 900px)
+     ========================================================================= -->
+<div class="mobile-layout-container fade-in">
+
+  <!-- Mobile screen view titles -->
+  <!-- Screen 1: Dashboard header -->
+  <div class="mobile-dashboard-arc-banner" *ngIf="activeMobileScreen === 'DASHBOARD'">
+    <div class="mobile-banner-left">
+      <h2 class="mobile-brand-title">TAMIZH</h2>
+      <h2 class="mobile-brand-subtitle">TRAVELS</h2>
+      <span class="mobile-brand-slogan-tag">Let's go safely</span>
+    </div>
+
+    <div class="mobile-banner-right">
+      <!-- yellow car logo shape -->
+      <svg viewBox="0 0 100 60" width="56" height="38" fill="#FFCC00">
+        <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z" />
+        <circle cx="28" cy="48" r="9" fill="#000" />
+        <circle cx="28" cy="48" r="4" fill="#FFCC00" />
+        <circle cx="82" cy="48" r="9" fill="#000" />
+        <circle cx="82" cy="48" r="4" fill="#FFCC00" />
+        <rect x="52" y="19" width="16" height="12" fill="#000" />
+        <rect x="34" y="19" width="14" height="12" fill="#000" />
+        <circle cx="18" cy="38" r="3" fill="#fff" />
+        <circle cx="92" cy="38" r="3" fill="#fff" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Screen 2,3,4,5: Sub headers yellow banner (Hidden on DASHBOARD and REVIEW) -->
+  <div class="mobile-screen-title-banner" *ngIf="activeMobileScreen !== 'DASHBOARD' && activeMobileScreen !== 'REVIEW'">
+    <button class="mobile-banner-back-btn" (click)="setMobileScreen('DASHBOARD')" title="Go back to Dashboard">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+
+    <h3 class="mobile-banner-title">
+      <span *ngIf="activeMobileScreen === 'INPUT'">New Estimate</span>
+      <span *ngIf="activeMobileScreen === 'SUMMARY'">Fare Estimate</span>
+      <span *ngIf="activeMobileScreen === 'SETTINGS'">Rate Settings</span>
+      <span *ngIf="activeMobileScreen === 'HISTORY'">Recent Estimates</span>
+    </h3>
+
+    <div class="mobile-banner-right-action">
+      <button class="mobile-header-icon-btn" *ngIf="activeMobileScreen === 'INPUT'" (click)="setMobileScreen('HISTORY')"
+        title="View recent history estimation list">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </button>
+      <button class="mobile-header-icon-btn" *ngIf="activeMobileScreen === 'HISTORY'" (click)="clearAllHistory()"
+        title="Clear all history list items">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile screen content layouts -->
+  <div class="mobile-screen-scroll-container">
+
+    <!-- Screen 1: Dashboard Home -->
+    <div class="mobile-screen-dashboard-view fade-in" *ngIf="activeMobileScreen === 'DASHBOARD'">
+      <div class="mobile-dashboard-grid">
+
+        <div class="mobile-grid-card" (click)="setMobileScreen('INPUT')">
+          <div class="mobile-grid-card-icon red">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div class="mobile-grid-card-title">New Estimate</div>
+          <div class="mobile-grid-card-desc">Calculate Trip Fare</div>
+        </div>
+
+        <div class="mobile-grid-card" (click)="setMobileScreen('HISTORY')">
+          <div class="mobile-grid-card-icon yellow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="mobile-grid-card-title">Recent Estimates</div>
+          <div class="mobile-grid-card-desc">View History</div>
+        </div>
+
+        <div class="mobile-grid-card" (click)="setMobileScreen('SETTINGS')">
+          <div class="mobile-grid-card-icon black">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+          </div>
+          <div class="mobile-grid-card-title" style="font-weight: 700; margin-top: 0.4rem;">Rate Settings</div>
+          <div class="mobile-grid-card-desc">Set Default Rates</div>
+        </div>
+
+        <div class="mobile-grid-card" (click)="showAboutModal = true">
+          <div class="mobile-grid-card-icon black">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div class="mobile-grid-card-title">About Us</div>
+          <div class="mobile-grid-card-desc">App Information</div>
+        </div>
+
+      </div>
+
+      <!-- support headphone badge -->
+      <div class="mobile-support-pill-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+          <path
+            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
+          </path>
+        </svg>
+        <div style="text-align: left;">
+          <div style="font-weight: 800; font-size: 0.95rem;">24 x 7 Service</div>
+          <div style="font-size: 0.75rem; color: #555;">Safe • Reliable • Affordable</div>
+        </div>
+      </div>
+
+      <!-- bottom call button -->
+      <button class="mobile-call-hotline-btn" (click)="triggerDirectCall()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+          <path
+            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+          </path>
+        </svg>
+        +91 95976 73524
+      </button>
+    </div>
+
+    <!-- Screen 2: Input Screen -->
+    <div class="mobile-screen-input-view fade-in" *ngIf="activeMobileScreen === 'INPUT'">
+      <form (submit)="calculateFare(); $event.preventDefault();">
+
+        <!-- Mobile Trip type selection tabs -->
+        <div class="mobile-trip-tabs-bar">
+          <button type="button" class="mobile-trip-tab-btn" [class.active]="selectedTripType === 'One Way'"
+            (click)="selectTripType('One Way')">One Way</button>
+          <button type="button" class="mobile-trip-tab-btn" [class.active]="selectedTripType === 'Round Trip'"
+            (click)="selectTripType('Round Trip')">Round Trip</button>
+          <button type="button" class="mobile-trip-tab-btn" [class.active]="selectedTripType === 'Local'"
+            (click)="selectTripType('Local')">Local</button>
+          <button type="button" class="mobile-trip-tab-btn" [class.active]="selectedTripType === 'Airport'"
+            (click)="selectTripType('Airport')">Airport</button>
+        </div>
+
+        <!-- Mobile dynamic input fields row -->
+        <div class="mobile-tab-inputs-group">
+
+          <!-- CITY (Local only) -->
+          <div class="mobile-form-input-card" *ngIf="selectedTripType === 'Local'">
+            <label class="mobile-input-label-tag">CITY</label>
+            <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
+              <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
+              <input type="text" [ngModel]="pickupLocation" (ngModelChange)="fetchLocationSuggestions($event, 'pickup')"
+                name="pickupLocation" class="mobile-input"
+                style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
+                autocomplete="off" placeholder="Start typing city" />
+              <span class="mobile-input-loader" *ngIf="isLoadingPickup"></span>
+            </div>
+
+            <div class="mobile-autocomplete-dropdown"
+              *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+              <div class="mobile-autocomplete-item" *ngFor="let item of pickupSuggestions"
+                (click)="selectGeocodedLocation(item, 'pickup')">
+                <span class="pin">📍</span>
+                <span class="label">{{item.display_name}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TRIP (Airport only) -->
+          <div class="mobile-form-input-card" *ngIf="selectedTripType === 'Airport'">
+            <label class="mobile-input-label-tag">TRIP</label>
+            <select [(ngModel)]="airportTripType" name="airportTripType" class="mobile-input"
+              style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;">
+              <option value="Drop to Airport">Drop to Airport</option>
+              <option value="Pickup from Airport">Pickup from Airport</option>
+            </select>
+          </div>
+
+          <!-- FROM (One Way, Round Trip) -->
+          <div class="mobile-form-input-card"
+            *ngIf="selectedTripType === 'One Way' || selectedTripType === 'Round Trip'">
+            <label class="mobile-input-label-tag">FROM</label>
+            <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
+              <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
+              <input type="text" [ngModel]="pickupLocation" (ngModelChange)="fetchLocationSuggestions($event, 'pickup')"
+                name="pickupLocation" class="mobile-input"
+                style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
+                autocomplete="off" placeholder="Start typing address" />
+              <span class="mobile-input-loader" *ngIf="isLoadingPickup"></span>
+            </div>
+
+            <div class="mobile-autocomplete-dropdown"
+              *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+              <div class="mobile-autocomplete-item" *ngFor="let item of pickupSuggestions"
+                (click)="selectGeocodedLocation(item, 'pickup')">
+                <span class="pin">📍</span>
+                <span class="label">{{item.display_name}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PICKUP ADDRESS / AIRPORT (Airport only) -->
+          <div class="mobile-form-input-card" *ngIf="selectedTripType === 'Airport'">
+            <label class="mobile-input-label-tag">{{ airportTripType === 'Drop to Airport' ? 'PICKUP ADDRESS' : 'PICKUP
+              AIRPORT' }}</label>
+            <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
+              <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
+              <input type="text" [ngModel]="pickupLocation" (ngModelChange)="fetchLocationSuggestions($event, 'pickup')"
+                name="pickupLocation" class="mobile-input"
+                style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
+                autocomplete="off"
+                [placeholder]="airportTripType === 'Drop to Airport' ? 'Enter pickup location' : 'Enter airport name'" />
+              <span class="mobile-input-loader" *ngIf="isLoadingPickup"></span>
+            </div>
+
+            <div class="mobile-autocomplete-dropdown"
+              *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+              <div class="mobile-autocomplete-item" *ngFor="let item of pickupSuggestions"
+                (click)="selectGeocodedLocation(item, 'pickup')">
+                <span class="pin">📍</span>
+                <span class="label">{{item.display_name}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TO (One Way, Round Trip) -->
+          <div class="mobile-form-input-card"
+            *ngIf="selectedTripType === 'One Way' || selectedTripType === 'Round Trip'">
+            <label class="mobile-input-label-tag">TO</label>
+            <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
+              <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
+              <input type="text" [ngModel]="dropLocation" (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
+                name="dropLocation" class="mobile-input"
+                style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
+                autocomplete="off" placeholder="Start typing destination" />
+              <span class="mobile-input-loader" *ngIf="isLoadingDrop"></span>
+            </div>
+
+            <div class="mobile-autocomplete-dropdown"
+              *ngIf="activeSuggestionField === 'drop' && dropSuggestions.length > 0">
+              <div class="mobile-autocomplete-item" *ngFor="let item of dropSuggestions"
+                (click)="selectGeocodedLocation(item, 'drop')">
+                <span class="pin">📍</span>
+                <span class="label">{{item.display_name}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DROP ADDRESS / AIRPORT (Airport only) -->
+          <div class="mobile-form-input-card" *ngIf="selectedTripType === 'Airport'">
+            <label class="mobile-input-label-tag">{{ airportTripType === 'Drop to Airport' ? 'DROP AIRPORT' : 'DROP
+              ADDRESS' }}</label>
+            <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
+              <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
+              <input type="text" [ngModel]="dropLocation" (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
+                name="dropLocation" class="mobile-input"
+                style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
+                autocomplete="off"
+                [placeholder]="airportTripType === 'Drop to Airport' ? 'Enter airport name' : 'Enter drop destination'" />
+              <span class="mobile-input-loader" *ngIf="isLoadingDrop"></span>
+            </div>
+
+            <div class="mobile-autocomplete-dropdown"
+              *ngIf="activeSuggestionField === 'drop' && dropSuggestions.length > 0">
+              <div class="mobile-autocomplete-item" *ngFor="let item of dropSuggestions"
+                (click)="selectGeocodedLocation(item, 'drop')">
+                <span class="pin">📍</span>
+                <span class="label">{{item.display_name}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PICK UP DATE -->
+          <div class="mobile-form-input-card">
+            <label class="mobile-input-label-tag">PICK UP DATE</label>
+            <input type="date" [(ngModel)]="pickupDate" name="pickupDate" class="mobile-input"
+              style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
+          </div>
+
+          <!-- RETURN DATE (only for ROUND TRIP) -->
+          <div class="mobile-form-input-card" *ngIf="selectedTripType === 'Round Trip'">
+            <label class="mobile-input-label-tag">RETURN DATE</label>
+            <input type="date" [(ngModel)]="returnDate" name="returnDate" class="mobile-input"
+              style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
+          </div>
+
+          <!-- PICK UP TIME -->
+          <div class="mobile-form-input-card">
+            <label class="mobile-input-label-tag">PICK UP TIME</label>
+            <input type="time" [(ngModel)]="pickupTime" name="pickupTime" class="mobile-input"
+              style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
+          </div>
+
+        </div>
+
+        <!-- Mobile Explore Cabs Button -->
+        <button type="submit" class="mobile-explore-cabs-btn" [disabled]="isLocating"
+          style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 0.95rem; padding: 0.85rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25);"
+          onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
+          {{ isLocating ? 'SEARCHING REAL ROUTES...' : 'EXPLORE CABS' }}
+        </button>
+
+        <div
+          style="display: none; font-size: 0.65rem; font-weight: 800; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 2px; margin: 1rem 0 0.5rem 0; text-align: left;">
+          Fare Settings (Overrides)
+        </div>
+        <div style="display: none;">
+          <div class="mobile-form-input-card">
+            <label class="mobile-input-label-tag">Distance (KM)</label>
+            <div class="mobile-input-relative-box">
+              <input type="number" [(ngModel)]="distance" name="distance" class="mobile-input no-icon" />
+              <span class="unit-tag">km</span>
+            </div>
+          </div>
+
+          <div class="mobile-form-input-card">
+            <label class="mobile-input-label-tag">Rate Per KM (₹)</label>
+            <input type="number" step="0.5" [(ngModel)]="ratePerKm" name="ratePerKm" class="mobile-input no-icon" />
+          </div>
+
+          <div class="mobile-form-row-grid">
+            <div class="mobile-form-input-card">
+              <label class="mobile-input-label-tag">Base Fare (₹)</label>
+              <input type="number" [(ngModel)]="baseFare" name="baseFare" class="mobile-input no-icon" />
+            </div>
+            <div class="mobile-form-input-card">
+              <label class="mobile-input-label-tag">Toll / Parking (₹)</label>
+              <input type="number" [(ngModel)]="tollParking" name="tollParking" class="mobile-input no-icon" />
+            </div>
+          </div>
+
+          <div class="mobile-form-input-card">
+            <label class="mobile-input-label-tag">Waiting Time (Minutes)</label>
+            <div class="mobile-input-relative-box">
+              <input type="number" [(ngModel)]="waitingTime" name="waitingTime" class="mobile-input no-icon"
+                (ngModelChange)="recalculateTotalFare()" />
+              <span class="unit-tag" style="font-size: 0.65rem;">mins</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Screen 3: Estimate Summary (Select Car View for Mobile) -->
+    <div class="mobile-screen-summary-view fade-in" *ngIf="activeMobileScreen === 'SUMMARY'"
+      style="padding: 1rem; box-sizing: border-box; text-align: left;">
+
+      <!-- Top breadcrumb and trip summary header row -->
+      <div class="mobile-results-breadcrumbs-header"
+        style="border-bottom: 1px solid #e5e7eb; padding-bottom: 0.85rem; margin-bottom: 1rem;">
+        <div style="font-size: 0.72rem; color: #6b7280; margin-bottom: 0.25rem;">
+          <a href="javascript:void(0)" (click)="goHome()"
+            style="color: #3b82f6; text-decoration: none; font-weight: 600;">Home</a> &gt; Select Car
+        </div>
+        <h2 style="font-size: 1.15rem; font-weight: 800; color: #111827; margin: 0 0 0.5rem 0;">{{ pickupLocation }} -
+          {{ dropLocation || 'Local Package' }}</h2>
+
+        <div
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; background: #f9fafb; padding: 0.5rem; border-radius: 6px; font-size: 0.75rem; margin-bottom: 0.5rem;">
+          <div>
+            <span style="color: #6b7280; display: block; font-size: 0.65rem; text-transform: uppercase;">Trip
+              Type</span>
+            <span style="font-weight: 700; color: #111827;">{{ selectedTripType }}</span>
+          </div>
+          <div>
+            <span style="color: #6b7280; display: block; font-size: 0.65rem; text-transform: uppercase;">Pick up</span>
+            <span style="font-weight: 700; color: #111827;">{{ getFormattedDate(pickupDate) }}</span>
+          </div>
+          <div>
+            <span style="color: #6b7280; display: block; font-size: 0.65rem; text-transform: uppercase;">Time</span>
+            <span style="font-weight: 700; color: #111827;">{{ getFormattedTime(pickupTime) }}</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: flex-end;">
+            <button (click)="setMobileScreen('INPUT')"
+              style="border: 1px solid #3b82f6; background: transparent; color: #3b82f6; font-weight: 700; font-size: 0.7rem; padding: 0.3rem 0.75rem; border-radius: 12px; cursor: pointer;">Modify</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blue Promotional Banner Bar -->
+      <div class="mobile-promo-banner-bar"
+        style="background: #1d4ed8; color: white; display: flex; flex-direction: column; gap: 0.35rem; padding: 0.65rem; border-radius: 6px; margin-bottom: 1rem; font-weight: 700; font-size: 0.72rem; align-items: flex-start;">
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <span>₹</span> Book Now at Zero Cost
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <span>🚫</span> Free Cancellations Upto 1 Hour
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <span>🎧</span> 24x7 Customer Support
+        </div>
+      </div>
+
+      <!-- Vehicle Cards List -->
+      <div class="mobile-vehicles-list-wrapper"
+        style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+        <div class="mobile-vehicle-card" *ngFor="let veh of vehiclesList"
+          style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s;"
+          [style.opacity]="veh.disabled ? '0.65' : '1'">
+
+          <!-- Top name + rating badge row -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem 0.5rem 1rem; border-bottom: 1px solid #f3f4f6;">
+            <span style="font-size: 0.95rem; font-weight: 800; color: #111827;">{{ veh.name }}</span>
+            <span
+              style="background: #111827; color: var(--primary-yellow); font-size: 0.62rem; font-weight: 800; padding: 2px 5px; border-radius: 4px;">{{
+              veh.rating }}</span>
+          </div>
+
+          <!-- Body details -->
+          <div style="display: flex; padding: 0.75rem 1rem; gap: 1rem; align-items: center;">
+            <!-- Left: small car preview -->
+            <div
+              style="flex: 1; max-width: 100px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 6px; padding: 0.25rem;">
+              <svg viewBox="0 0 100 60" width="90" height="60" fill="#bbb" *ngIf="veh.name.includes('Wagon R')">
+                <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z"
+                  fill="#eee" stroke="#bbb" />
+                <circle cx="28" cy="48" r="9" fill="#FFCC00" />
+                <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+              </svg>
+              <svg viewBox="0 0 100 60" width="90" height="60" fill="#bbb" *ngIf="veh.name.includes('Etios')">
+                <path d="M10,35 Q30,30 45,15 Q55,15 70,18 Q80,30 95,33 Q100,45 95,52 L5,52 Z" fill="#ddd"
+                  stroke="#bbb" />
+                <circle cx="25" cy="50" r="9" fill="#555" />
+                <circle cx="75" cy="50" r="9" fill="#555" />
+              </svg>
+              <img [src]="veh.image" alt="Swift Dzire"
+                style="width: auto; max-width: 100%; max-height: 55px; object-fit: contain; mix-blend-mode: multiply; border-radius: 4px;"
+                *ngIf="veh.name.includes('Dzire')" />
+              <img src="yellow-car.png" alt="Yellow Cab" style="width: 80px; height: auto;"
+                *ngIf="!veh.name.includes('Wagon R') && !veh.name.includes('Etios') && !veh.name.includes('Dzire')" />
+            </div>
+
+            <!-- Right: specifications -->
+            <div style="flex: 2; display: flex; flex-direction: column;">
+              <div style="font-size: 0.72rem; color: #6b7280; font-weight: 500; margin-bottom: 0.35rem;">{{ veh.desc }}
+              </div>
+              <div
+                style="font-size: 0.75rem; color: #374151; display: flex; flex-direction: column; gap: 0.2rem; line-height: 1.2;">
+                <div>✔ Driver allowance included</div>
+                <div>✔ <strong>{{ selectedTripType === 'Round Trip' ? (distance || 0) * 2 : (distance || 0) }}
+                    km</strong> included</div>
+              </div>
+
+              <!-- Fuel selection -->
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; margin-top: 0.4rem;">
+                <span style="font-weight: 700; color: #4b5563;">Fuel:</span>
+                <label style="display: flex; align-items: center; gap: 0.15rem; cursor: pointer;">
+                  <input type="radio" [name]="'fuel-mob-' + veh.name"
+                    [checked]="veh.fuelType === 'CNG' || veh.fuelType === 'Petrol'" (change)="veh.fuelType = 'CNG'"
+                    [disabled]="veh.disabled" /> CNG/Petrol
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.15rem; cursor: pointer;"
+                  *ngIf="veh.name.includes('Crysta')">
+                  <input type="radio" [name]="'fuel-mob-' + veh.name" [checked]="veh.fuelType === 'Diesel'"
+                    (change)="veh.fuelType = 'Diesel'" [disabled]="veh.disabled" /> Diesel
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: price and select button row -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top: 1px solid #f3f4f6; background: #fafafa;">
+            <div style="text-align: left;">
+              <div
+                style="font-size: 0.65rem; color: #10b981; font-weight: 800; display: flex; align-items: center; gap: 0.35rem;">
+                <span style="background: #ecfdf5; padding: 1px 4px; border-radius: 3px;">12% OFF</span>
+                <span style="text-decoration: line-through; color: #9ca3af;">₹{{ getVehicleOriginalFare(veh) |
+                  number:'1.0-0' }}</span>
+              </div>
+              <div style="font-size: 1.35rem; font-weight: 800; color: #1d4ed8; line-height: 1; margin-top: 2px;">
+                ₹{{ getVehicleFare(veh) | number:'1.0-0' }}
+              </div>
+              <div style="font-size: 0.62rem; color: #4b5563; font-weight: 600; margin-top: 1px;">
+                (incl. GST, Tolls/Parking Extra)
+              </div>
+            </div>
+
+            <button (click)="selectVehicleMobile(veh)" [disabled]="veh.disabled"
+              [style.background]="veh.disabled ? '#9ca3af' : '#f26b28'"
+              [style.cursor]="veh.disabled ? 'not-allowed' : 'pointer'" [style.opacity]="veh.disabled ? '0.7' : '1'"
+              [style.box-shadow]="veh.disabled ? 'none' : '0 2px 6px rgba(242,107,40,0.15)'"
+              style="color: white; border: none; font-weight: 800; font-size: 0.82rem; padding: 0.55rem 1.15rem; border-radius: 6px; transition: all 0.2s;">
+              {{ veh.disabled ? 'UNAVAILABLE' : 'SELECT CAR' }}
+            </button>
+          </div>
+
+          <!-- Blue luggage carrier footer row -->
+          <div
+            style="background: #e0f2fe; color: #0369a1; padding: 0.35rem 1rem; display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 700; border-top: 1px solid #bae6fd;">
+            <span>🚙</span> Cab with Luggage Carrier &#64; ₹149
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen: Review Booking (Mobile View) -->
+    <div class="mobile-screen-review-view fade-in" *ngIf="activeMobileScreen === 'REVIEW'"
+      style="padding: 1rem 1rem 0 1rem; box-sizing: border-box; text-align: left; background: #f8fafc; min-height: 100%;">
+
+      <!-- Top Breadcrumbs -->
+      <div style="font-size: 0.72rem; color: #6b7280; margin-bottom: 0.75rem;">
+        <a href="javascript:void(0)" (click)="goHome()"
+          style="color: #3b82f6; text-decoration: none; font-weight: 600;">Home</a> &gt;
+        <a href="javascript:void(0)" (click)="setMobileScreen('SUMMARY')"
+          style="color: #3b82f6; text-decoration: none; font-weight: 600;">Select Car</a> &gt; Review Booking
+      </div>
+
+      <!-- Blue Header Banner -->
+      <div
+        style="background: #0ea5e9; color: white; font-weight: 800; font-size: 0.95rem; padding: 0.65rem 1rem; border-radius: 8px; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; width: 100%; box-sizing: border-box; margin-bottom: 1rem;">
+        Review Your Booking
+      </div>
+
+      <!-- Main Column Stack -->
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+        <!-- Card 1: Route & Vehicle Summary -->
+        <div
+          style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #111827; margin: 0 0 0.5rem 0;">
+            {{ pickupLocation || 'Kanchipuram' }} <span style="color: #0ea5e9;">➔</span> {{ dropLocation || 'Bangalore'
+            }}
+            <span style="font-size: 0.85rem; font-weight: 600; color: #6b7280;">({{ selectedTripType === 'Round Trip' ?
+              'Roundtrip' : 'Oneway' }})</span>
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.82rem; color: #374151;">
+            <div>Car Type: <strong style="color: #111827;">{{ selectedVehicle?.name || 'Wagon R or Equivalent'
+                }}</strong></div>
+            <div>Fuel Type: <strong style="color: #111827;">{{ selectedVehicle?.fuelType || 'CNG' }}</strong></div>
+            <div>Pickup Date: <strong style="color: #111827;">{{ getDetailedFormattedDate(pickupDate, pickupTime)
+                }}</strong></div>
+            <div>Kms included: <strong style="color: #111827;">{{ distance || 281 }} kms</strong></div>
+          </div>
+        </div>
+
+        <!-- Yellow Free Cancellation Notice Banner -->
+        <div
+          style="background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1rem;">🟡</span> Free cancellation till <strong>1 hr</strong> of departure
+        </div>
+
+        <!-- Card 2: Contact & Pickup Details Form -->
+        <div
+          style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h4
+            style="font-size: 1.05rem; font-weight: 800; color: #111827; margin: 0 0 0.85rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #f3f4f6;">
+            Contact & Pickup Details</h4>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Name -->
+            <input type="text" [(ngModel)]="customerName" placeholder="Full Name"
+              style="background: #f1f3f5; border: none; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 600; color: #1f2937; outline: none; width: 100%; box-sizing: border-box;" />
+
+            <!-- Mobile Row -->
+            <div style="display: flex; gap: 0.5rem;">
+              <select
+                style="background: #f1f3f5; border: none; border-radius: 8px; padding: 0.85rem 0.65rem; font-size: 0.88rem; font-weight: 700; color: #374151; outline: none;">
+                <option value="+91">+91 ▾</option>
+              </select>
+              <input type="tel" [(ngModel)]="customerPhone" placeholder="Mobile No."
+                style="background: #f1f3f5; border: none; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 600; color: #1f2937; flex: 1; outline: none; box-sizing: border-box;" />
+            </div>
+
+            <!-- Email -->
+            <input type="email" [(ngModel)]="customerEmail" placeholder="Email ID (optional)"
+              style="background: #f1f3f5; border: none; border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 600; color: #1f2937; outline: none; width: 100%; box-sizing: border-box;" />
+
+            <!-- Pickup Location Box -->
+            <div style="background: #f1f3f5; border-radius: 8px; padding: 0.75rem 1rem;">
+              <div style="font-size: 0.68rem; color: #0284c7; font-weight: 800; margin-bottom: 2px;">Pickup Location
+              </div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #111827;">{{ pickupLocation || 'Kanchipuram,
+                Kanchipuram, Tamil Nadu, India' }}</div>
+            </div>
+
+            <!-- Drop Location Box -->
+            <div style="background: #f1f3f5; border-radius: 8px; padding: 0.75rem 1rem;">
+              <div style="font-size: 0.68rem; color: #0284c7; font-weight: 800; margin-bottom: 2px;">Drop Location</div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #111827;">{{ dropLocation || 'Bangalore,
+                Karnataka' }}</div>
+            </div>
+
+            <!-- Action Chips -->
+            <div style="display: flex; gap: 0.6rem; margin-top: 0.25rem;">
+              <button type="button" (click)="showAlternateEmail = !showAlternateEmail"
+                style="flex: 1; background: #f0f9ff; border: 1px solid #bae6fd; color: #0284c7; border-radius: 8px; padding: 0.65rem 0.5rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-align: center;">
+                + Alternate Email
+              </button>
+
+              <button type="button" (click)="showGstInput = !showGstInput"
+                style="flex: 1; background: #f0f9ff; border: 1px solid #bae6fd; color: #0284c7; border-radius: 8px; padding: 0.65rem 0.5rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-align: center;">
+                + Add GST
+              </button>
+            </div>
+
+            <!-- Optional Alternate Email input -->
+            <input type="email" *ngIf="showAlternateEmail" [(ngModel)]="alternateEmail" placeholder="Alternate Email ID"
+              style="background: #f1f3f5; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; outline: none; width: 100%; box-sizing: border-box;" />
+
+            <!-- Optional GST input -->
+            <input type="text" *ngIf="showGstInput" [(ngModel)]="gstNumber"
+              placeholder="Enter GSTIN Number & Company Name"
+              style="background: #f1f3f5; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; outline: none; width: 100%; box-sizing: border-box;" />
+          </div>
+        </div>
+
+        <!-- Coupon & Offers Section -->
+        <div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #111827; margin: 0 0 0.5rem 0;">Coupon & Offers</h4>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" [(ngModel)]="couponCode" placeholder="ENTER A COUPON"
+              style="flex: 1; background: #f8fafc; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; outline: none; box-sizing: border-box;" />
+            <button type="button" (click)="applyCoupon()"
+              style="background: #0ea5e9; color: white; border: none; font-weight: 800; font-size: 0.88rem; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+              APPLY
+            </button>
+          </div>
+          <div *ngIf="couponApplied" style="color: #16a34a; font-size: 0.75rem; font-weight: 700; margin-top: 4px;">
+            ✔ Coupon applied! Saved ₹{{ couponDiscount }}
+          </div>
+        </div>
+
+        <!-- SAY HELLO TO YOUR TRAVEL EXPERT CALLOUT BANNER -->
+        <div
+          style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border-radius: 16px; padding: 1rem 1.15rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+          <div>
+            <div style="font-size: 0.68rem; font-weight: 800; color: #a16207; letter-spacing: 0.5px;">SAY HELLO TO,
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-top: 1px;">YOUR TRAVEL EXPERT</div>
+            <div style="font-size: 0.68rem; color: #475569; margin-top: 2px;">Get expert advice for smarter travel
+              plans!</div>
+          </div>
+
+          <a href="tel:+919597673524"
+            style="background: white; color: #0f172a; border-radius: 50px; padding: 0.55rem 0.9rem; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.06); white-space: nowrap;">
+            <span>📞</span> <span>Call Expert</span> <span style="color: #cbd5e1;">|</span> <span>24×7</span>
+          </a>
+        </div>
+
+        <!-- Card 3: Inclusions / Exclusions -->
+        <div
+          style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h4
+            style="font-size: 1.05rem; font-weight: 800; color: #111827; margin: 0 0 0.85rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #f3f4f6;">
+            Inclusions/Exclusions</h4>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Inclusions -->
+            <div>
+              <div
+                style="font-size: 0.85rem; font-weight: 800; color: #16a34a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.7rem;">🟢</span> Inclusions
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem; color: #374151;">
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> Base Fare and Fuel Charges</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> Driver Allowance (₹300/day included)</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> GST (5% Included)</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> 1 bags</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> AC</div>
+              </div>
+            </div>
+
+            <!-- Exclusions -->
+            <div>
+              <div
+                style="font-size: 0.85rem; font-weight: 800; color: #dc2626; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.7rem;">🔴</span> Exclusions
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem; color: #374151;">
+                <div><span style="color: #dc2626; font-weight: 800;">✖</span> Tolls, Parking and State Permit charges
+                  (Extra, to be paid directly)</div>
+                <div><span style="color: #dc2626; font-weight: 800;">✖</span> Beyond package km charged at ₹{{
+                  getDynamicRatePerKm(selectedVehicle, distance || 0) }}/km after {{ distance || 281 }} km</div>
+                <div><span style="color: #dc2626; font-weight: 800;">✖</span> Multiple pickups/drops</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms accordion toggle -->
+          <div (click)="showTerms = !showTerms"
+            style="font-size: 0.82rem; font-weight: 700; color: #111827; cursor: pointer; margin-top: 1rem; display: flex; align-items: center; gap: 0.35rem;">
+            <span>Read Terms and Conditions</span>
+            <span>{{ showTerms ? '▴' : '▾' }}</span>
+          </div>
+
+          <div *ngIf="showTerms"
+            style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.75rem; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280; line-height: 1.4;">
+            • Parking and extra state permit fees to be paid to driver directly if applicable.<br />
+            • Free cancellation available up to 1 hour before scheduled pickup time.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM STICKY FLOATING PAYMENT BAR (Matching Screenshot 4) -->
+      <div class="mobile-sticky-bottom-payment-bar"
+        style="position: sticky; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 0.85rem 1rem; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); z-index: 100; margin: 1.5rem -1rem 0 -1rem;">
+
+        <!-- Total Fare Header Row with Info icon -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <div
+            style="font-size: 0.95rem; font-weight: 800; color: #111827; display: flex; align-items: center; gap: 0.35rem;">
+            Amount payable
+            <span (click)="showFareBreakup = !showFareBreakup"
+              style="background: #e0f2fe; color: #0284c7; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; cursor: pointer;"
+              title="View Fare Breakup">ℹ</span>
+          </div>
+          <div style="font-size: 1.35rem; font-weight: 900; color: #111827;">
+            ₹{{ getBookingTotalFare() | number:'1.0-0' }}
+          </div>
+        </div>
+
+        <!-- Optional Fare Breakup Popover/Drawer -->
+        <div *ngIf="showFareBreakup"
+          style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; font-size: 0.76rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+            <span>Base Fare (incl. Fuel)</span>
+            <strong>₹{{ getFareBreakdown().baseAndFuel | number:'1.0-0' }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"
+            *ngIf="getFareBreakdown().driverAllowance > 0">
+            <span>Driver Allowance</span>
+            <strong>₹{{ getFareBreakdown().driverAllowance }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"
+            *ngIf="getFareBreakdown().waitingCharges > 0">
+            <span>Waiting Charges</span>
+            <strong>₹{{ getFareBreakdown().waitingCharges }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+            <span>GST (5%)</span>
+            <strong>₹{{ getFareBreakdown().gst | number:'1.0-0' }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem; color: #16a34a;"
+            *ngIf="couponDiscount > 0">
+            <span>Coupon Discount</span>
+            <strong>- ₹{{ couponDiscount }}</strong>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; margin-bottom: 0.25rem; color: #dc2626; font-weight: 600;">
+            <span>Toll & Parking Charges</span>
+            <span>Extra</span>
+          </div>
+          <div
+            style="border-top: 1px dashed #cbd5e1; padding-top: 0.35rem; margin-top: 0.35rem; display: flex; justify-content: space-between; font-weight: 800; font-size: 0.82rem; color: #0f172a;">
+            <span>Total Payable</span>
+            <span style="color: #0284c7;">₹{{ getBookingTotalFare() | number:'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <!-- 3-Button Payment Grid: Pay 25% | Pay 100% | PAY NOW -->
+        <div style="margin-top: 1rem; width: 100%;">
+
+          <!-- PAY NOW Orange CTA Button -->
+          <button type="button" (click)="proceedBooking()"
+            style="background: #f26b28; color: white; border: none; border-radius: 8px; font-weight: 800; padding: 0.95rem 0.5rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25); transition: background 0.2s;"
+            onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
+            <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px;">Book Ride</div>
+            <div style="font-size: 0.95rem; font-weight: 800; margin-top: 2px;">Total: ₹{{ getBookingTotalFare() |
+              number:'1.0-0' }}</div>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Screen 4: Settings -->
+    <div class="mobile-screen-settings-view fade-in" *ngIf="activeMobileScreen === 'SETTINGS'">
+      <form (submit)="saveSettings()">
+        <div class="mobile-settings-section-title">DEFAULT RATES</div>
+
+        <div class="mobile-form-input-card">
+          <label class="mobile-input-label-tag">Rate Per KM (₹)</label>
+          <input type="number" step="0.5" [(ngModel)]="settingRatePerKm" name="settingRatePerKm"
+            class="mobile-input no-icon" />
+        </div>
+
+        <div class="mobile-form-input-card">
+          <label class="mobile-input-label-tag">Base Fare (₹)</label>
+          <input type="number" [(ngModel)]="settingBaseFare" name="settingBaseFare" class="mobile-input no-icon" />
+        </div>
+
+        <div class="mobile-form-input-card">
+          <label class="mobile-input-label-tag">Waiting Charges (₹) / per hour</label>
+          <input type="number" [(ngModel)]="settingWaitingChargesPerHour" name="settingWaitingChargesPerHour"
+            class="mobile-input no-icon" />
+        </div>
+
+        <div class="mobile-settings-section-title" style="margin-top: 1.5rem;">VEHICLE TYPE (Optional)</div>
+        <div class="mobile-vehicle-radios">
+          <label class="mobile-radio-label-item" [ngClass]="{'active': selectedVehicleType === 'Hatchback (4 Seater)'}">
+            <input type="radio" name="mobileVehicle" [checked]="selectedVehicleType === 'Hatchback (4 Seater)'"
+              (change)="onVehicleTypeChange('Hatchback (4 Seater)')" />
+            Hatchback (4 Seater)
+          </label>
+          <label class="mobile-radio-label-item" [ngClass]="{'active': selectedVehicleType === 'Sedan (4 Seater)'}">
+            <input type="radio" name="mobileVehicle" [checked]="selectedVehicleType === 'Sedan (4 Seater)'"
+              (change)="onVehicleTypeChange('Sedan (4 Seater)')" />
+            Sedan (4 Seater)
+          </label>
+          <label class="mobile-radio-label-item" [ngClass]="{'active': selectedVehicleType === 'SUV (6 Seater)'}">
+            <input type="radio" name="mobileVehicle" [checked]="selectedVehicleType === 'SUV (6 Seater)'"
+              (change)="onVehicleTypeChange('SUV (6 Seater)')" />
+            SUV (6 Seater)
+          </label>
+          <label class="mobile-radio-label-item"
+            [ngClass]="{'active': selectedVehicleType === 'Tempo Traveller (12 Seater)'}">
+            <input type="radio" name="mobileVehicle" [checked]="selectedVehicleType === 'Tempo Traveller (12 Seater)'"
+              (change)="onVehicleTypeChange('Tempo Traveller (12 Seater)')" />
+            Tempo Traveller (12 Seater)
+          </label>
+        </div>
+
+        <div class="mobile-settings-section-title" style="margin-top: 1.5rem;">TELEGRAM NOTIFICATIONS</div>
+
+        <div class="mobile-form-input-card">
+          <label class="mobile-input-label-tag">Telegram Bot Token</label>
+          <input type="text" [(ngModel)]="settingTelegramBotToken" name="settingTelegramBotToken"
+            class="mobile-input no-icon" placeholder="e.g. 123456789:ABCdefGhI..." />
+        </div>
+
+        <div class="mobile-form-input-card" style="margin-bottom: 0.5rem;">
+          <label class="mobile-input-label-tag">Telegram Chat ID</label>
+          <input type="text" [(ngModel)]="settingTelegramChatId" name="settingTelegramChatId"
+            class="mobile-input no-icon" placeholder="e.g. 987654321" />
+          <div style="font-size: 0.65rem; color: #64748b; margin-top: 4px; line-height: 1.35;">
+            1. Search <strong>&#64;BotFather</strong> on Telegram to create a Bot Token.<br />
+            2. Search <strong>&#64;userinfobot</strong> to find your personal Chat ID.
+          </div>
+        </div>
+
+        <button type="submit" class="mobile-black-cta-btn" style="margin-top: 2rem;">SAVE SETTINGS</button>
+      </form>
+    </div>
+
+    <!-- Screen 5: History -->
+    <div class="mobile-screen-history-view fade-in" *ngIf="activeMobileScreen === 'HISTORY'">
+      <div class="mobile-history-list" *ngIf="historyList.length > 0; else noMobileHistory">
+
+        <div class="mobile-history-card" *ngFor="let item of historyList"
+          (click)="pickupLocation=item.pickup; dropLocation=item.drop; distance=item.distance; ratePerKm=item.ratePerKm; baseFare=item.baseFare; tollParking=item.tollParking; waitingCharges=item.waitingCharges; totalFare=item.fare; setMobileScreen('SUMMARY')">
+          <div class="mobile-history-card-header-row">
+            <span class="route-title">{{item.pickup}} ➔ {{item.drop}}</span>
+            <button class="delete-trash-btn" (click)="deleteHistoryItem(item.id, $event)" title="Delete estimate">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="mobile-history-card-details-row">
+            <span class="dist-tag">{{item.distance}} km</span>
+            <span class="price-val">₹{{item.fare}}</span>
+          </div>
+          <div class="mobile-history-card-date">{{item.date}}</div>
+        </div>
+
+      </div>
+
+      <ng-template #noMobileHistory>
+        <div class="mobile-no-history-card">
+          <h3>No Estimates Saved</h3>
+          <p>Saved calculations will be listed here.</p>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+
+  <!-- Mobile bottom tab navbar navigation -->
+  <nav class="mobile-bottom-tab-bar">
+    <button class="tab-item"
+      [ngClass]="{'active': activeMobileScreen === 'DASHBOARD' || activeMobileScreen === 'INPUT' || activeMobileScreen === 'SUMMARY'}"
+      (click)="setMobileScreen('DASHBOARD')">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </button>
+    <button class="tab-item" [ngClass]="{'active': activeMobileScreen === 'HISTORY'}"
+      (click)="setMobileScreen('HISTORY')">
+      <span class="tab-icon">📋</span>
+      <span class="tab-label">Estimates</span>
+    </button>
+    <button class="tab-item" [ngClass]="{'active': activeMobileScreen === 'SETTINGS'}"
+      (click)="setMobileScreen('SETTINGS')">
+      <span class="tab-icon">⚙️</span>
+      <span class="tab-label">Settings</span>
+    </button>
+  </nav>
+
+</div>
+
+
+<!-- =========================================================================
+     VERIFIED DIALOG MODALS (Shared across viewports)
+     ========================================================================= -->
+
+<!-- About Us Corporate modal -->
+<div class="shared-modal-overlay fade-in" *ngIf="showAboutModal">
+  <div class="about-modal-card-box">
+    <div class="about-modal-header-banner">
+      <h4>About Tamizh Travels</h4>
+      <button class="close-about-btn" (click)="showAboutModal = false">×</button>
+    </div>
+    <div class="about-modal-body-content">
+      <p><strong>Tamizh Travels</strong> is India's premier cab rental service aggregator. We deliver safe, disinfected,
+        air-conditioned passenger taxis for intercity outstation routes.</p>
+      <p style="margin-top: 0.5rem;">Experience direct, transparent rate calculations, zero surprise fees, and
+        background-verified drivers for ultimate safety.</p>
+      <div
+        style="background: var(--light-gray); padding: 0.75rem; border-radius: 8px; margin-top: 1rem; font-size: 0.8rem;">
+        <div>📞 <strong>Hotline Support:</strong> +91 95976 73524</div>
+        <div>✉️ <strong>E-mail:</strong> info&#64;tamizhtravels.com</div>
+        <div>📍 <strong>Address:</strong> Sector 6, HSR Layout, Bangalore, India</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     BOOKING REVIEW & CONFIRMATION MODAL (Desktop Only)
+     ========================================================================= -->
+<div class="shared-modal-overlay desktop-booking-modal-overlay fade-in" *ngIf="showBookingModal"
+  (click)="showBookingModal = false"
+  style="display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 1rem;">
+  <div class="booking-review-modal-box" (click)="$event.stopPropagation()"
+    style="background: #f8fafc; border-radius: 12px; width: 100%; max-width: 1100px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.25); position: relative; box-sizing: border-box; text-align: left; padding: 1.5rem;">
+
+    <!-- Top Blue Header & Free Cancellation Badge -->
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+      <div
+        style="background: #0284c7; color: white; font-weight: 800; font-size: 0.95rem; padding: 0.65rem 1.5rem; border-radius: 8px; letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 0.5rem;">
+        Review Your Booking
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div
+          style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 6px; padding: 0.45rem 0.9rem; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🟡</span> Free cancellation till <strong>1 hr</strong> of departure
+        </div>
+
+        <button type="button" (click)="showBookingModal = false"
+          style="background: #e2e8f0; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #475569; cursor: pointer; font-weight: 800; transition: background 0.2s;"
+          onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Main 2-Column Review Grid -->
+    <div class="booking-review-columns-grid"
+      style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; align-items: start;">
+
+      <!-- LEFT COLUMN: Trip & Customer Details -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <!-- Card 1: Route & Vehicle Summary -->
+        <div
+          style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h3
+            style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span>{{ pickupLocation || 'Starting City' }}</span>
+            <span style="color: #0284c7;">➔</span>
+            <span>{{ dropLocation || 'Destination City' }}</span>
+            <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">({{ selectedTripType | titlecase
+              }})</span>
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: #334155;">
+            <div>Car Type: <strong style="color: #0f172a;">{{ selectedVehicle?.name || 'Wagon R or Equivalent'
+                }}</strong></div>
+            <div>Fuel Type: <strong style="color: #0f172a;">{{ selectedVehicle?.fuelType || 'CNG' }}</strong></div>
+            <div>Pickup Date: <strong style="color: #0f172a;">{{ getDetailedFormattedDate(pickupDate, pickupTime) }} •
+                Kms included: {{ distance || 281 }} kms</strong></div>
+          </div>
+        </div>
+
+        <!-- Card 2: Contact & Pickup Details Form -->
+        <div
+          style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0;">Contact & Pickup Details
+          </h4>
+
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- Row 1: Name and Mobile -->
+            <div style="display: grid; grid-template-columns: 1.3fr 1.7fr; gap: 0.75rem;">
+              <input type="text" [(ngModel)]="customerName" placeholder="Full Name"
+                style="background: #f1f5f9; border: 1px solid transparent; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.88rem; outline: none; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='#0284c7'" onblur="this.style.borderColor='transparent'" />
+
+              <div style="display: flex; gap: 0.4rem;">
+                <select
+                  style="background: #f1f5f9; border: 1px solid transparent; border-radius: 6px; padding: 0.75rem 0.5rem; font-size: 0.88rem; font-weight: 700; color: #334155; outline: none; cursor: pointer;">
+                  <option value="+91">+91 ▾</option>
+                </select>
+                <input type="tel" [(ngModel)]="customerPhone" placeholder="Mobile No."
+                  style="background: #f1f5f9; border: 1px solid transparent; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.88rem; flex: 1; outline: none; transition: border-color 0.2s;"
+                  onfocus="this.style.borderColor='#0284c7'" onblur="this.style.borderColor='transparent'" />
+              </div>
+            </div>
+
+            <!-- Row 2: Email and Action Chips -->
+            <div style="display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 0.75rem; align-items: center;">
+              <input type="email" [(ngModel)]="customerEmail" placeholder="Email ID (optional)"
+                style="background: #f1f5f9; border: 1px solid transparent; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.88rem; outline: none; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='#0284c7'" onblur="this.style.borderColor='transparent'" />
+
+              <button type="button" (click)="showAlternateEmail = !showAlternateEmail"
+                style="background: #f0fdf4; border: 1px dashed #86efac; color: #16a34a; border-radius: 6px; padding: 0.75rem 0.5rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-align: center;">
+                + Alternate email
+              </button>
+
+              <button type="button" (click)="showGstInput = !showGstInput"
+                style="background: #eff6ff; border: 1px dashed #93c5fd; color: #2563eb; border-radius: 6px; padding: 0.75rem 0.5rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-align: center;">
+                + Add GST
+              </button>
+            </div>
+
+            <!-- Optional Alternate Email input -->
+            <input type="email" *ngIf="showAlternateEmail" [(ngModel)]="alternateEmail" placeholder="Alternate Email ID"
+              style="background: #f1f5f9; border: 1px solid #86efac; border-radius: 6px; padding: 0.65rem 1rem; font-size: 0.85rem; outline: none;" />
+
+            <!-- Optional GST input -->
+            <input type="text" *ngIf="showGstInput" [(ngModel)]="gstNumber"
+              placeholder="Enter GSTIN Number & Company Name"
+              style="background: #f1f5f9; border: 1px solid #93c5fd; border-radius: 6px; padding: 0.65rem 1rem; font-size: 0.85rem; outline: none;" />
+
+            <!-- Row 3: Pickup Location Box -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem 1rem;">
+              <div
+                style="font-size: 0.68rem; color: #0284c7; font-weight: 800; text-transform: uppercase; margin-bottom: 2px;">
+                Pickup Location</div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">{{ pickupLocation || 'Pickup location
+                address' }}</div>
+            </div>
+
+            <!-- Row 4: Drop Location Box -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem 1rem;">
+              <div
+                style="font-size: 0.68rem; color: #0284c7; font-weight: 800; text-transform: uppercase; margin-bottom: 2px;">
+                Drop Location</div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">{{ dropLocation || 'Drop destination
+                address' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Inclusions / Exclusions -->
+        <div
+          style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0;">Inclusions/Exclusions
+          </h4>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem;">
+            <!-- Left: Inclusions -->
+            <div>
+              <div
+                style="font-size: 0.82rem; font-weight: 800; color: #16a34a; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.65rem;">🟢</span> Inclusions
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem; color: #334155;">
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> Base Fare and Fuel Charges</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> Driver Allowance (₹300/day included)</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> GST (5% Included)</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> 1 bags</div>
+                <div><span style="color: #16a34a; font-weight: 800;">✔</span> AC</div>
+              </div>
+            </div>
+
+            <!-- Right: Exclusions -->
+            <div>
+              <div
+                style="font-size: 0.82rem; font-weight: 800; color: #dc2626; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.65rem;">🔴</span> Exclusions
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem; color: #334155;">
+                <div><span style="color: #dc2626; font-weight: 800;">✖</span> Tolls, Parking and State Permit charges
+                  (Extra, to be paid directly)</div>
+                <div><span style="color: #dc2626; font-weight: 800;">✖</span> Beyond package km charged at ₹{{
+                  getDynamicRatePerKm(selectedVehicle, distance || 0) }}/km after {{ distance || 281 }} km</div>
+                <div><span style="color: #dc2626; font-weight: 800;">✖</span> Multiple pickups/drops</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms accordion toggle -->
+          <div (click)="showTerms = !showTerms"
+            style="font-size: 0.82rem; font-weight: 700; color: #0f172a; cursor: pointer; margin-top: 1.25rem; display: flex; align-items: center; gap: 0.3rem;">
+            <span>Read Terms and Conditions</span>
+            <span>{{ showTerms ? '▴' : '▾' }}</span>
+          </div>
+
+          <div *ngIf="showTerms"
+            style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+            • Parking and extra state permit fees to be paid to driver directly if applicable.<br />
+            • Free cancellation available up to 1 hour before scheduled pickup time.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Payment Options & Price Summary -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+        <div
+          style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 0.85rem 0;">Amount payable</h4>
+
+          <div
+            style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.92rem; font-weight: 800; color: #0369a1;">Total Amount</div>
+            <div style="font-size: 1.4rem; font-weight: 900; color: #0369a1;">
+              ₹{{ getBookingTotalFare() | number:'1.0-0' }}
+            </div>
+          </div>
+
+          <!-- Coupon & Offers Section -->
+          <div style="margin-top: 1.5rem;">
+            <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem;">Coupon & Offers
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" [(ngModel)]="couponCode" placeholder="ENTER A COUPON"
+                style="flex: 1; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; outline: none;" />
+              <button type="button" (click)="applyCoupon()"
+                style="background: #0284c7; color: white; border: none; font-weight: 800; font-size: 0.85rem; padding: 0.65rem 1.25rem; border-radius: 6px; cursor: pointer;">
+                APPLY
+              </button>
+            </div>
+            <div *ngIf="couponApplied" style="color: #16a34a; font-size: 0.75rem; font-weight: 700; margin-top: 4px;">
+              ✔ Coupon applied! Saved ₹{{ couponDiscount }}
+            </div>
+          </div>
+
+          <!-- PROCEED CTA BUTTON -->
+          <button type="button" (click)="proceedBooking()"
+            style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; width: 100%; padding: 0.85rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1.5rem; box-shadow: 0 4px 12px rgba(242,107,40,0.25);"
+            onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
+            Book Ride
+          </button>
+
+          <!-- Fare Breakup Accordion -->
+          <div (click)="showFareBreakup = !showFareBreakup"
+            style="color: #0284c7; font-size: 0.82rem; font-weight: 700; text-align: center; margin-top: 0.75rem; cursor: pointer;">
+            View Fare Break up {{ showFareBreakup ? '▴' : '▾' }}
+          </div>
+
+          <div *ngIf="showFareBreakup"
+            style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; margin-top: 0.5rem; font-size: 0.78rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+              <span>Base Fare (incl. Fuel)</span>
+              <strong>₹{{ getFareBreakdown().baseAndFuel | number:'1.0-0' }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;"
+              *ngIf="getFareBreakdown().driverAllowance > 0">
+              <span>Driver Allowance</span>
+              <strong>₹{{ getFareBreakdown().driverAllowance }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;"
+              *ngIf="getFareBreakdown().waitingCharges > 0">
+              <span>Waiting Charges</span>
+              <strong>₹{{ getFareBreakdown().waitingCharges }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+              <span>GST (5%)</span>
+              <strong>₹{{ getFareBreakdown().gst | number:'1.0-0' }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; color: #16a34a;"
+              *ngIf="couponDiscount > 0">
+              <span>Coupon Discount</span>
+              <strong>- ₹{{ couponDiscount }}</strong>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; color: #dc2626; font-weight: 600;">
+              <span>Toll & Parking Charges</span>
+              <span>Extra</span>
+            </div>
+            <div
+              style="border-top: 1px dashed #cbd5e1; padding-top: 0.4rem; margin-top: 0.4rem; display: flex; justify-content: space-between; font-weight: 800; font-size: 0.88rem; color: #0f172a;">
+              <span>Total Payable</span>
+              <span style="color: #0284c7;">₹{{ getBookingTotalFare() | number:'1.0-0' }}</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- WhatsApp Share chat bubble preview modal -->
+<div class="shared-modal-overlay fade-in" *ngIf="showWhatsAppModal" (click)="showWhatsAppModal = false">
+  <div class="whatsapp-dialog-preview-box" (click)="$event.stopPropagation()">
+
+    <!-- whatsapp header -->
+    <div class="whatsapp-dialog-header">
+      <div class="avatar-row-details">
+        <button class="wa-back-btn" (click)="showWhatsAppModal = false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="avatar-icon-circle">🚖</div>
+        <div>
+          <div class="wa-title">TAMIZH TRAVELS</div>
+          <div class="wa-sub-online">online</div>
+        </div>
+      </div>
+      <div class="header-call-svgs">
+        <span>📞</span>
+        <span style="margin-left: 1rem;">⋮</span>
+      </div>
+    </div>
+
+    <!-- whatsapp stream containing message card -->
+    <div class="whatsapp-dialog-messages-stream">
+      <div class="chat-message-bubble-right-row">
+        <div class="chat-bubble-estimate-card">
+
+          <div class="wa-estimate-card-inner">
+            <div class="wa-card-header-yellow-banner">
+              <strong>TAMIZH TRAVELS</strong>
+              <span>Let's go safely</span>
+            </div>
+
+            <!-- dynamic vehicle image preview -->
+            <div class="wa-card-photo-panel" style="background: #fafafa; padding: 0.5rem; text-align: center;">
+              <!-- Render Wagon R outline SVG in WA message if matched -->
+              <svg viewBox="0 0 100 60" width="130" height="80" fill="#bbb"
+                *ngIf="selectedVehicle && selectedVehicle.name.includes('Wagon R')" style="margin: 0 auto;">
+                <path d="M15,30 Q35,28 45,15 Q55,15 65,15 Q75,28 95,30 Q100,42 95,50 Q85,55 15,50 Q10,42 15,30 Z"
+                  fill="#eee" stroke="#bbb" />
+                <circle cx="28" cy="48" r="9" fill="#FFCC00" />
+                <circle cx="28" cy="48" r="4" fill="#000" />
+                <circle cx="82" cy="48" r="9" fill="#FFCC00" />
+                <circle cx="82" cy="48" r="4" fill="#000" />
+              </svg>
+              <!-- Render Etios outline SVG in WA message if matched -->
+              <svg viewBox="0 0 100 60" width="130" height="80" fill="#bbb"
+                *ngIf="selectedVehicle && selectedVehicle.name.includes('Etios')" style="margin: 0 auto;">
+                <path d="M10,35 Q30,30 45,15 Q55,15 70,18 Q80,30 95,33 Q100,45 95,52 L5,52 Z" fill="#ddd"
+                  stroke="#bbb" />
+                <circle cx="25" cy="50" r="9" fill="#555" />
+                <circle cx="75" cy="50" r="9" fill="#555" />
+              </svg>
+              <img [src]="selectedVehicle.image" alt="Vehicle preview"
+                style="max-height: 80px; width: auto; margin: 0 auto; object-fit: contain; mix-blend-mode: multiply; border-radius: 4px;"
+                *ngIf="selectedVehicle && selectedVehicle.name.includes('Dzire')" />
+              <img src="yellow-car.png" alt="Vehicle preview" style="max-height: 80px; width: auto; margin: 0 auto;"
+                *ngIf="!selectedVehicle || (!selectedVehicle.name.includes('Wagon R') && !selectedVehicle.name.includes('Etios') && !selectedVehicle.name.includes('Dzire'))" />
+            </div>
+
+            <div class="wa-card-title-bold" *ngIf="selectedVehicle">{{ selectedVehicle.name }} Estimate 🚖</div>
+            <div class="wa-card-title-bold" *ngIf="!selectedVehicle">Trip Estimate 🚖</div>
+
+            <table class="wa-card-breakdown-details-table">
+              <tbody>
+                <tr *ngIf="customerName">
+                  <td class="lbl">Passenger</td>
+                  <td class="val" style="color: #1d4ed8; font-weight: 800;">: {{customerName}} ({{customerPhone}})</td>
+                </tr>
+                <tr *ngIf="selectedPaymentOption">
+                  <td class="lbl">Payment</td>
+                  <td class="val">: {{selectedPaymentOption === 'PART' ? 'Part Pay (25% Advance)' : 'Full Pay'}}</td>
+                </tr>
+                <tr *ngIf="selectedVehicle">
+                  <td class="lbl">Vehicle</td>
+                  <td class="val" style="color: #1d4ed8; font-weight: 800;">: {{selectedVehicle.name}}</td>
+                </tr>
+                <tr>
+                  <td class="lbl">Pickup</td>
+                  <td class="val">: {{pickupLocation}}</td>
+                </tr>
+                <tr>
+                  <td class="lbl">Drop</td>
+                  <td class="val">: {{dropLocation}}</td>
+                </tr>
+                <tr>
+                  <td class="lbl">Distance</td>
+                  <td class="val">: {{distance}} km</td>
+                </tr>
+                <tr>
+                  <td class="lbl">Rate</td>
+                  <td class="val">: ₹{{ratePerKm | number:'1.2-2'}} / km</td>
+                </tr>
+                <tr style="height: 6px;">
+                  <td colspan="2">
+                    <div style="border-top: 1px dashed #dddddd;"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="lbl">Base Fare</td>
+                  <td class="val">: ₹{{baseFare}}</td>
+                </tr>
+                <tr *ngIf="tollParking > 0">
+                  <td class="lbl">Toll / Parking</td>
+                  <td class="val">: ₹{{tollParking}}</td>
+                </tr>
+                <tr *ngIf="waitingCharges > 0">
+                  <td class="lbl">Waiting Charges</td>
+                  <td class="val">: ₹{{waitingCharges}}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="border-top: 1px dashed #cccccc; margin: 0.5rem 0;"></div>
+
+            <div class="wa-card-total-row">
+              <span class="lbl-tot">Total Fare</span>
+              <span class="val-tot">₹{{totalFare | number:'1.0-0'}}</span>
+            </div>
+
+            <p class="wa-card-footer-slogan">
+              Thank you for choosing <strong>TAMIZH TRAVELS</strong>.<br />
+              Safe Journey! 😊
+            </p>
+          </div>
+
+          <!-- bubble status bar -->
+          <div class="chat-bubble-ticks-row">
+            <span class="time-stamp">09:15 AM</span>
+            <span class="read-checkmarks-green">✓✓</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- whatsapp chat footer input -->
+    <div class="whatsapp-dialog-footer-input"
+      style="height: auto; padding: 0.65rem 0.5rem; flex-direction: column; gap: 0.35rem; background: #f0f2f5; border-top: 1px solid #e1e9eb;">
+      <div style="display: flex; align-items: center; width: 100%; gap: 0.5rem;">
+        <span style="font-size: 1.15rem; color: #54656f;">😊</span>
+        <input type="text" [(ngModel)]="whatsappRecipientNumber"
+          placeholder="Enter Recipient Phone (e.g. +91 98765 43210)" class="wa-input-field"
+          style="margin-left: 0; font-weight: 500; color: #111827; border-radius: 8px; border: 1px solid #d1d5db; height: 36px; outline: none; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);" />
+
+        <!-- Native Circular Send Button -->
+        <button (click)="sendWhatsAppQuotation()"
+          style="width: 36px; height: 36px; border-radius: 50%; background: #00a884; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"
+          title="Send quotation via WhatsApp" onmouseover="this.style.background='#008f72'"
+          onmouseout="this.style.background='#00a884'">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="white"
+            style="transform: rotate(45deg); margin-left: -2px; margin-top: -1px;">
+            <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+          </svg>
+        </button>
+      </div>
+      <div
+        style="font-size: 0.68rem; color: #667781; font-weight: 500; text-align: left; width: 100%; padding-left: 1.75rem;">
+        💡 Defaults to customer number if empty. Opens official WhatsApp web/app.
+      </div>
+    </div>
+
+  </div>
+</div>
