@@ -135,6 +135,9 @@ This document logs all the design decisions, layout adjustments, API integration
   * **Brand Logo & #f8bd20 Theme Color Integration**:
     * Set `--primary-yellow` in `src/styles.css` to **`#f8bd20`**.
     * Replaced SVG car icons in desktop & mobile headers and browser favicon with the custom yellow & black car artwork (`app-logo.jpg`).
+  * **CTA Button Car Drive Animation**:
+    * Added smooth car drive animation (`carDriveAcrossButton`) to **Explore Cabs** and **Book Ride** buttons.
+    * When clicked or while fetching routes (`isLocating`), a car icon 🚗💨 drives smoothly across the button from left to right.
 
 ---
 

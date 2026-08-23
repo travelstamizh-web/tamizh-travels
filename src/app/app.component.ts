@@ -57,9 +57,57 @@ export class AppComponent implements OnInit {
   showFareBreakup: boolean = true;
   showTerms: boolean = false;
 
+  // Modern Toast / Popup Notification State
+  showAlertModal: boolean = false;
+  alertTitle: string = '';
+  alertMessage: string = '';
+  alertType: 'success' | 'warning' | 'error' | 'info' = 'info';
+  alertTimeout: any = null;
+
+  showCustomAlert(message: string, type: 'success' | 'warning' | 'error' | 'info' = 'info', title: string = '') {
+    clearTimeout(this.alertTimeout);
+    this.alertMessage = message;
+    this.alertType = type;
+    this.alertTitle = title || (type === 'success' ? 'Success' : type === 'warning' || type === 'error' ? 'Notice' : 'Information');
+    this.showAlertModal = true;
+
+    this.alertTimeout = setTimeout(() => {
+      this.closeCustomAlert();
+    }, 4500);
+  }
+
+  closeCustomAlert() {
+    this.showAlertModal = false;
+  }
+
+  // Button Car Drive Animation States
+  isExploreAnimating: boolean = false;
+  isBookingAnimating: boolean = false;
+
+  triggerCarDriveAnim(type: 'explore' | 'booking') {
+    if (type === 'explore') {
+      this.isExploreAnimating = true;
+      setTimeout(() => this.isExploreAnimating = false, 1200);
+    } else {
+      this.isBookingAnimating = true;
+      setTimeout(() => this.isBookingAnimating = false, 1200);
+    }
+  }
+
+  // Memoization Caches to prevent circular template re-evaluation
+  private fareBreakdownCache = new Map<string, any>();
+  private formattedDateCache = new Map<string, string>();
+  private formattedTimeCache = new Map<string, string>();
+  private detailedDateCache = new Map<string, string>();
+
   getDetailedFormattedDate(dateStr: string, timeStr: string): string {
     if (!dateStr) dateStr = this.pickupDate || '2026-08-09';
     if (!timeStr) timeStr = this.pickupTime || '07:00';
+
+    const cacheKey = `${dateStr}_${timeStr}`;
+    if (this.detailedDateCache.has(cacheKey)) {
+      return this.detailedDateCache.get(cacheKey)!;
+    }
 
     const d = new Date(dateStr);
     const day = isNaN(d.getDate()) ? 9 : d.getDate();
@@ -73,19 +121,24 @@ export class AppComponent implements OnInit {
     const year = !isNaN(d.getFullYear()) ? d.getFullYear() : 2026;
 
     const formattedTime = this.getFormattedTime(timeStr);
-    return `${day}${suffix} ${monthName} ${year}, ${formattedTime}`;
+    const result = `${day}${suffix} ${monthName} ${year}, ${formattedTime}`;
+    this.detailedDateCache.set(cacheKey, result);
+    return result;
+  }
+
+  getBookingRawFare(): number {
+    if (this.selectedVehicle) {
+      return this.getVehicleFare(this.selectedVehicle);
+    }
+    return this.totalFare || 0;
   }
 
   getBookingTotalFare(): number {
-    if (this.selectedVehicle) {
-      return this.getVehicleFare(this.selectedVehicle) - this.couponDiscount;
-    }
-    return (this.totalFare || 0) - this.couponDiscount;
+    return Math.max(0, this.getBookingRawFare() - this.couponDiscount);
   }
 
   getBookingBaseFare(): number {
-    const total = this.selectedVehicle ? this.getVehicleFare(this.selectedVehicle) : (this.totalFare || 0);
-    return Math.max(0, total - (this.tollParking || 0));
+    return Math.max(0, this.getBookingRawFare() - (this.tollParking || 0));
   }
 
   getPartPayAmount(): number {
@@ -97,20 +150,22 @@ export class AppComponent implements OnInit {
   }
 
   applyCoupon() {
-    if (this.couponCode.trim().toUpperCase() === 'SAVE10' || this.couponCode.trim().toUpperCase() === 'TAMIZH') {
-      this.couponDiscount = Math.round(this.getBookingTotalFare() * 0.1);
+    const code = this.couponCode.trim().toUpperCase();
+    if (code === 'NEW50') {
+      this.couponDiscount = 50;
       this.couponApplied = true;
-      alert(`Coupon ${this.couponCode.toUpperCase()} applied! You saved ₹${this.couponDiscount}`);
-    } else if (this.couponCode.trim()) {
-      this.couponDiscount = 150;
-      this.couponApplied = true;
-      alert(`Special Coupon ${this.couponCode.toUpperCase()} applied! You saved ₹150`);
+      this.showCustomAlert(`Coupon ${code} applied! You saved ₹${this.couponDiscount}`, 'success', 'Coupon Applied!');
+    } else {
+      this.couponDiscount = 0;
+      this.couponApplied = false;
+      this.showCustomAlert('Invalid coupon code. Please enter a valid coupon code.', 'warning', 'Invalid Coupon');
     }
   }
 
   proceedBooking() {
+    this.triggerCarDriveAnim('booking');
     if (!this.customerName.trim() || !this.customerPhone.trim()) {
-      alert('Please enter your Full Name and Mobile Number to proceed.');
+      this.showCustomAlert('Please enter your Full Name and Mobile Number to proceed.', 'warning', 'Required Details');
       return;
     }
 
@@ -125,7 +180,7 @@ export class AppComponent implements OnInit {
     // Validate 10-digit Indian Mobile Number pattern (starts with 6-9)
     const indianMobileRegex = /^[6-9]\d{9}$/;
     if (!indianMobileRegex.test(rawPhone)) {
-      alert('Please enter a valid 10-digit Indian mobile number.');
+      this.showCustomAlert('Please enter a valid 10-digit Indian mobile number.', 'warning', 'Invalid Mobile Number');
       return;
     }
 
@@ -134,7 +189,7 @@ export class AppComponent implements OnInit {
 
     this.showBookingModal = false;
     this.sendTelegramNotification();
-    alert('Booking Request Sent successfully! Our representative will call you shortly.');
+    this.showCustomAlert('Booking Request Sent successfully! Our representative will call you shortly.', 'success', 'Booking Confirmed!');
     this.goHome();
   }
 
@@ -497,9 +552,10 @@ export class AppComponent implements OnInit {
   }
 
   recalculateTotalFare() {
+    this.fareBreakdownCache.clear();
     if (this.distance !== null) {
-      const dummyHatchback = { name: 'Wagon R or Equivalent', baseRate: 14, baseFareOffset: 100 };
-      this.totalFare = this.getVehicleFare(dummyHatchback);
+      const targetVehicle = this.selectedVehicle || (this.vehiclesList && this.vehiclesList.length > 0 ? this.vehiclesList[0] : { name: 'Wagon R or Equivalent', baseRate: 14, baseFareOffset: 100 });
+      this.totalFare = this.getVehicleFare(targetVehicle);
     }
   }
 
@@ -567,37 +623,46 @@ export class AppComponent implements OnInit {
       console.warn('OSRM routing lookup failed or timed out, using Haversine road distance:', e);
       this.distance = haversineDist;
       this.lastFetchedCoords = coordKey;
+    } finally {
+      this.recalculateTotalFare();
+      this.isLocating = false;
+      this.isLoadingPickup = false;
+      this.isLoadingDrop = false;
     }
-
-    this.recalculateTotalFare();
-
-    this.isLocating = false;
-    this.isLoadingPickup = false;
-    this.isLoadingDrop = false;
   }
 
   // Estimator math
   getFormattedDate(dateStr: string): string {
     if (!dateStr) return '05-08-2026';
-    const parts = dateStr.split('-');
-    if (parts.length === 3) {
-      return `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD to DD-MM-YYYY
+    if (this.formattedDateCache.has(dateStr)) {
+      return this.formattedDateCache.get(dateStr)!;
     }
-    return dateStr;
+    const parts = dateStr.split('-');
+    let res = dateStr;
+    if (parts.length === 3) {
+      res = `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD to DD-MM-YYYY
+    }
+    this.formattedDateCache.set(dateStr, res);
+    return res;
   }
 
   getFormattedTime(timeStr: string): string {
     if (!timeStr) return '7:00 AM';
+    if (this.formattedTimeCache.has(timeStr)) {
+      return this.formattedTimeCache.get(timeStr)!;
+    }
     const parts = timeStr.split(':');
+    let res = timeStr;
     if (parts.length === 2) {
       let hr = parseInt(parts[0]);
       const min = parts[1];
       const ampm = hr >= 12 ? 'PM' : 'AM';
       hr = hr % 12;
       if (hr === 0) hr = 12;
-      return `${hr}:${min} ${ampm}`;
+      res = `${hr}:${min} ${ampm}`;
     }
-    return timeStr;
+    this.formattedTimeCache.set(timeStr, res);
+    return res;
   }
 
   getDynamicRatePerKm(vehicle: any, dist: number): number {
@@ -618,7 +683,7 @@ export class AppComponent implements OnInit {
 
     // Scale other vehicles relative to Hatchback (Wagon R) baseline
     if (vehicle.name.includes('Sedan') || vehicle.name.includes('Etios') || vehicle.name.includes('Dzire')) {
-      return baseRate + 2;
+      return baseRate;
     } else if (vehicle.name.includes('Ertiga')) {
       return baseRate + 7;
     } else if (vehicle.name.includes('Crysta') || vehicle.name.includes('Innova')) {
@@ -630,9 +695,13 @@ export class AppComponent implements OnInit {
   getFareBreakdown(vehicle: any = null) {
     const veh = vehicle || this.selectedVehicle || { name: 'Wagon R or Equivalent', baseRate: 14, baseFareOffset: 100 };
     const dist = this.distance || 0;
-    let calcDistance = dist;
+    const cacheKey = `${veh.name}_${this.selectedTripType}_${dist}_${this.baseFare}_${this.waitingTime}`;
 
-    // adjust base based on vehicle offset relative to base hatchback
+    if (this.fareBreakdownCache.has(cacheKey)) {
+      return this.fareBreakdownCache.get(cacheKey)!;
+    }
+
+    let calcDistance = dist;
     const vehicleBase = this.baseFare + (veh.baseFareOffset - 80);
 
     if (this.selectedTripType === 'Round Trip') {
@@ -644,7 +713,8 @@ export class AppComponent implements OnInit {
     }
 
     const rate = this.getDynamicRatePerKm(veh, calcDistance);
-    const baseAndFuel = Math.round(vehicleBase + (calcDistance * rate));
+    // const baseAndFuel = Math.round(vehicleBase + (calcDistance * rate)); with basefare
+    const baseAndFuel = Math.round(calcDistance * rate);
     const driverAllowance = 0;
     const nightAllowance = 0;
     const waitingCharges = Math.max(0, (this.waitingTime || 0) - 60) * 1;
@@ -653,7 +723,7 @@ export class AppComponent implements OnInit {
     const gst = Math.round(subtotal * 0.05);
     const total = subtotal + gst;
 
-    return {
+    const result = {
       baseAndFuel,
       driverAllowance,
       nightAllowance,
@@ -661,6 +731,9 @@ export class AppComponent implements OnInit {
       gst,
       total
     };
+
+    this.fareBreakdownCache.set(cacheKey, result);
+    return result;
   }
 
   getVehicleFare(vehicle: any): number {
@@ -690,8 +763,11 @@ export class AppComponent implements OnInit {
   }
 
   async exploreCabs() {
+    this.triggerCarDriveAnim('explore');
+    if (this.isLocating) return; // Prevent duplicate continuous concurrent calls
+
     if (!this.pickupLocation.trim() || (!this.dropLocation.trim() && this.selectedTripType !== 'Local')) {
-      alert('Please enter both pickup and drop locations.');
+      this.showCustomAlert('Please enter both pickup and drop locations.', 'warning', 'Location Required');
       return;
     }
 
@@ -732,20 +808,22 @@ export class AppComponent implements OnInit {
           console.error('Drop geocode error:', e);
         }
       }
+
+      if (this.pickupCoords && (this.dropCoords || this.selectedTripType === 'Local')) {
+        await this.autoCalculateDistanceAndFare();
+      } else {
+        this.fallbackMockDistance();
+        this.recalculateTotalFare();
+      }
     } catch (e) {
       console.warn('Geocoding failed:', e);
-    }
-
-    if (this.pickupCoords && (this.dropCoords || this.selectedTripType === 'Local')) {
-      await this.autoCalculateDistanceAndFare();
-    } else {
       this.fallbackMockDistance();
       this.recalculateTotalFare();
+    } finally {
+      this.isLocating = false;
+      this.isLoadingPickup = false;
+      this.isLoadingDrop = false;
     }
-
-    this.isLocating = false;
-    this.isLoadingPickup = false;
-    this.isLoadingDrop = false;
 
     // Default select Swift Dzire
     this.selectedVehicle = this.vehiclesList.find(v => v.name.includes('Dzire')) || this.vehiclesList[0];
@@ -824,7 +902,7 @@ export class AppComponent implements OnInit {
 
     this.waitingCharges = 0; // reset active wait
 
-    alert('Settings Saved successfully!');
+    this.showCustomAlert('Settings Saved successfully!', 'success', 'Settings Saved');
     this.setMobileScreen('DASHBOARD');
   }
 
@@ -834,8 +912,9 @@ export class AppComponent implements OnInit {
       return;
     }
 
+    const totalKm = (this.distance || 0) * 2;
     const vehicleName = this.selectedVehicle ? this.selectedVehicle.name : 'Outstation Cab';
-    const rate = this.selectedVehicle ? this.getDynamicRatePerKm(this.selectedVehicle, this.distance || 0) : this.ratePerKm;
+    const rate = this.selectedVehicle ? this.getDynamicRatePerKm(this.selectedVehicle, totalKm) : this.ratePerKm;
     const bk = this.getFareBreakdown(this.selectedVehicle);
     const total = bk.total - this.couponDiscount;
 
@@ -846,14 +925,14 @@ export class AppComponent implements OnInit {
     msg += `🛫 *From:* ${this.pickupLocation}\n`;
     msg += `🛬 *To:* ${this.dropLocation}\n`;
     msg += `📅 *Date/Time:* ${this.getDetailedFormattedDate(this.pickupDate, this.pickupTime)}\n`;
-    msg += `🛣️ *Distance:* ${this.distance || 0} km (Rate: ₹${rate}/km)\n\n`;
+    msg += `🛣️ *Distance:* ${totalKm} km (Up & Down) (Rate: ₹${rate}/km)\n\n`;
     msg += `💵 *Fare Breakdown:*\n`;
     msg += `- Base & Fuel: ₹${bk.baseAndFuel}\n`;
     if (bk.driverAllowance > 0) msg += `- Driver Allowance: ₹${bk.driverAllowance}\n`;
     if (bk.nightAllowance > 0) msg += `- Night Allowance: ₹${bk.nightAllowance}\n`;
     if (bk.waitingCharges > 0) msg += `- Waiting Charges: ₹${bk.waitingCharges} (${this.waitingTime} mins)\n`;
     msg += `- GST (5%): ₹${bk.gst}\n`;
-    if (this.couponDiscount > 0) msg += `- Discount: -₹${this.couponDiscount}\n`;
+    if (this.couponDiscount > 0) msg += `- Discount (${this.couponCode.trim().toUpperCase()}): -₹${this.couponDiscount}\n`;
     msg += `- Tolls/Parking: Extra\n`;
     msg += `💰 *Total Fare:* *₹${total}*\n`;
 
@@ -892,7 +971,7 @@ export class AppComponent implements OnInit {
     }
 
     if (!phoneNum) {
-      alert('Please enter a mobile number to send the quotation to.');
+      this.showCustomAlert('Please enter a mobile number to send the quotation to.', 'warning', 'Phone Number Required');
       return;
     }
 
@@ -902,8 +981,9 @@ export class AppComponent implements OnInit {
       cleanPhone = '91' + cleanPhone; // Default to India country code if 10 digits
     }
 
+    const totalKm = (this.distance || 0) * 2;
     const vehicleName = this.selectedVehicle ? this.selectedVehicle.name : 'Outstation Cab';
-    const rate = this.selectedVehicle ? this.getDynamicRatePerKm(this.selectedVehicle, this.distance || 0) : this.ratePerKm;
+    const rate = this.selectedVehicle ? this.getDynamicRatePerKm(this.selectedVehicle, totalKm) : this.ratePerKm;
 
     // Get precise breakdown values
     const bk = this.getFareBreakdown(this.selectedVehicle);
@@ -919,7 +999,7 @@ export class AppComponent implements OnInit {
     text += `*Vehicle:* ${vehicleName}\n`;
     text += `*Route:* ${this.pickupLocation} ➔ ${this.dropLocation} (${this.selectedTripType})\n`;
     text += `*Pickup Time:* ${this.getDetailedFormattedDate(this.pickupDate, this.pickupTime)}\n`;
-    text += `*Distance:* ${this.distance || 0} km\n`;
+    text += `*Distance:* ${totalKm} km (Up & Down)\n`;
     text += `*Rate:* ₹${rate} / km\n\n`;
 
     text += `*Base Fare (incl. Fuel):* ₹${bk.baseAndFuel}\n`;
@@ -934,7 +1014,7 @@ export class AppComponent implements OnInit {
     }
     text += `*GST (5%):* ₹${bk.gst}\n`;
     if (this.couponDiscount > 0) {
-      text += `*Coupon Discount:* -₹${this.couponDiscount}\n`;
+      text += `*Coupon Discount (${this.couponCode.trim().toUpperCase()}):* -₹${this.couponDiscount}\n`;
     }
     text += `*Tolls, Parking & Permits:* Extra (to be paid directly)\n`;
     text += `---------------------------------------\n`;
@@ -948,6 +1028,6 @@ export class AppComponent implements OnInit {
   }
 
   triggerDirectCall() {
-    window.location.href = 'tel:+919597673524';
+    window.location.href = 'tel:+919597956507';
   }
 }

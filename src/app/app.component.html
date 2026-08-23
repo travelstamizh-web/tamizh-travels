@@ -20,7 +20,7 @@
       </svg>
       <div style="display: inline-block; text-align: left; vertical-align: middle; line-height: 1.2;">
         <span style="font-size: 0.75rem; color: #4b5563; display: block; font-weight: 500;">Phone support</span>
-        <span style="font-weight: 800; font-size: 1rem; color: #000000;">+91 95976 73524</span>
+        <span style="font-weight: 800; font-size: 1rem; color: #000000;">+91 95979 56507</span>
       </div>
     </div>
   </header>
@@ -270,10 +270,11 @@
 
           </div>
 
-          <button type="submit" class="desktop-submit-cta-btn" [disabled]="isLocating"
-            style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; padding: 0.85rem 2.5rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.15);"
+          <button type="submit" class="btn-car-anim-wrapper desktop-submit-cta-btn" [disabled]="isLocating"
+            style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; padding: 0.85rem 2.5rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.15); position: relative; overflow: hidden;"
             onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
-            {{ isLocating ? 'SEARCHING REAL ROUTES...' : 'EXPLORE CABS' }}
+            <span class="btn-text-label">{{ isLocating ? 'SEARCHING REAL ROUTES...' : 'EXPLORE CABS' }}</span>
+            <span class="btn-car-drive-icon" [class.drive-active]="isLocating || isExploreAnimating">🚗💨</span>
           </button>
         </form>
       </div>
@@ -392,7 +393,7 @@
             </div>
 
             <!-- Fuel Type Selection -->
-            <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.82rem; margin-bottom: 0.5rem;">
+            <div style="display: none; align-items: center; gap: 0.75rem; font-size: 0.82rem; margin-bottom: 0.5rem;">
               <span style="font-weight: 700; color: #4b5563;">Select Fuel Type</span>
               <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; font-weight: 600;">
                 <input type="radio" [name]="'fuel-' + veh.name"
@@ -586,7 +587,7 @@
             d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
           </path>
         </svg>
-        +91 95976 73524
+        +91 95979 56507
       </button>
     </div>
 
@@ -759,10 +760,11 @@
         </div>
 
         <!-- Mobile Explore Cabs Button -->
-        <button type="submit" class="mobile-explore-cabs-btn" [disabled]="isLocating"
-          style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 0.95rem; padding: 0.85rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25);"
+        <button type="submit" class="btn-car-anim-wrapper mobile-explore-cabs-btn" [disabled]="isLocating"
+          style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 0.95rem; padding: 0.85rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25); position: relative; overflow: hidden;"
           onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
-          {{ isLocating ? 'SEARCHING REAL ROUTES...' : 'EXPLORE CABS' }}
+          <span class="btn-text-label">{{ isLocating ? 'SEARCHING REAL ROUTES...' : 'EXPLORE CABS' }}</span>
+          <span class="btn-car-drive-icon" [class.drive-active]="isLocating || isExploreAnimating">🚗💨</span>
         </button>
 
         <div
@@ -997,7 +999,7 @@
             <div>Fuel Type: <strong style="color: #111827;">{{ selectedVehicle?.fuelType || 'CNG' }}</strong></div>
             <div>Pickup Date: <strong style="color: #111827;">{{ getDetailedFormattedDate(pickupDate, pickupTime)
                 }}</strong></div>
-            <div>Kms included: <strong style="color: #111827;">{{ distance || 281 }} kms</strong></div>
+            <div>Kms included: <strong style="color: #111827;">{{ (distance || 0) * 2 }} kms (Up &amp; Down)</strong></div>
           </div>
         </div>
 
@@ -1099,7 +1101,7 @@
               plans!</div>
           </div>
 
-          <a href="tel:+919597673524"
+          <a href="tel:+919597956507"
             style="background: white; color: #0f172a; border-radius: 50px; padding: 0.55rem 0.9rem; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.06); white-space: nowrap;">
             <span>📞</span> <span>Call Expert</span> <span style="color: #cbd5e1;">|</span> <span>24×7</span>
           </a>
@@ -1223,12 +1225,13 @@
         <div style="margin-top: 1rem; width: 100%;">
 
           <!-- PAY NOW Orange CTA Button -->
-          <button type="button" (click)="proceedBooking()"
-            style="background: #f26b28; color: white; border: none; border-radius: 8px; font-weight: 800; padding: 0.95rem 0.5rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25); transition: background 0.2s;"
+          <button type="button" (click)="proceedBooking()" class="btn-car-anim-wrapper mobile-confirm-booking-btn"
+            style="background: #f26b28; color: white; border: none; border-radius: 8px; font-weight: 800; padding: 0.95rem 0.5rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25); transition: background 0.2s; position: relative; overflow: hidden;"
             onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
-            <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px;">Book Ride</div>
-            <div style="font-size: 0.95rem; font-weight: 800; margin-top: 2px;">Total: ₹{{ getBookingTotalFare() |
+            <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; position: relative; z-index: 2;">Book Ride</div>
+            <div style="font-size: 0.95rem; font-weight: 800; margin-top: 2px; position: relative; z-index: 2;">Total: ₹{{ getBookingTotalFare() |
               number:'1.0-0' }}</div>
+            <span class="btn-car-drive-icon" [class.drive-active]="isBookingAnimating">🚗💨</span>
           </button>
 
         </div>
@@ -1382,7 +1385,7 @@
         background-verified drivers for ultimate safety.</p>
       <div
         style="background: var(--light-gray); padding: 0.75rem; border-radius: 8px; margin-top: 1rem; font-size: 0.8rem;">
-        <div>📞 <strong>Hotline Support:</strong> +91 95976 73524</div>
+        <div>📞 <strong>Hotline Support:</strong> +91 95979 56507</div>
         <div>✉️ <strong>E-mail:</strong> travelstamizh&#64;gmail.com</div>
         <div>📍 <strong>Address:</strong> Puttuthakku, Ranipet, Tamil Nadu, India</div>
       </div>
@@ -1445,7 +1448,7 @@
                 }}</strong></div>
             <div>Fuel Type: <strong style="color: #0f172a;">{{ selectedVehicle?.fuelType || 'CNG' }}</strong></div>
             <div>Pickup Date: <strong style="color: #0f172a;">{{ getDetailedFormattedDate(pickupDate, pickupTime) }} •
-                Kms included: {{ distance || 281 }} kms</strong></div>
+                Kms included: {{ (distance || 0) * 2 }} kms (Up &amp; Down)</strong></div>
           </div>
         </div>
 
@@ -1609,10 +1612,11 @@
           </div>
 
           <!-- PROCEED CTA BUTTON -->
-          <button type="button" (click)="proceedBooking()"
-            style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; width: 100%; padding: 0.85rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1.5rem; box-shadow: 0 4px 12px rgba(242,107,40,0.25);"
+          <button type="button" (click)="proceedBooking()" class="btn-car-anim-wrapper desktop-confirm-booking-btn"
+            style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; width: 100%; padding: 0.85rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1.5rem; box-shadow: 0 4px 12px rgba(242,107,40,0.25); position: relative; overflow: hidden;"
             onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
-            Book Ride
+            <span class="btn-text-label">Book Ride</span>
+            <span class="btn-car-drive-icon" [class.drive-active]="isBookingAnimating">🚗💨</span>
           </button>
 
           <!-- Fare Breakup Accordion -->
@@ -1831,5 +1835,24 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- =========================================================================
+     MODERN ALERT / NOTIFICATION POPUP MODAL
+     ========================================================================= -->
+<div class="custom-alert-backdrop fade-in" *ngIf="showAlertModal" (click)="closeCustomAlert()">
+  <div class="custom-alert-card-box" (click)="$event.stopPropagation()" [ngClass]="alertType">
+    <div class="custom-alert-icon-wrap">
+      <span *ngIf="alertType === 'success'">✅</span>
+      <span *ngIf="alertType === 'warning'">⚠️</span>
+      <span *ngIf="alertType === 'error'">🚨</span>
+      <span *ngIf="alertType === 'info'">ℹ️</span>
+    </div>
+    <div class="custom-alert-content">
+      <h4 class="custom-alert-title">{{ alertTitle }}</h4>
+      <p class="custom-alert-message">{{ alertMessage }}</p>
+    </div>
+    <button class="custom-alert-close-btn" (click)="closeCustomAlert()" title="Close alert">×</button>
   </div>
 </div>
