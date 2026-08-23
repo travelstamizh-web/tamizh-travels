@@ -909,7 +909,7 @@
               </div>
 
               <!-- Fuel selection -->
-              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; margin-top: 0.4rem;">
+              <div style="display: none; align-items: center; gap: 0.5rem; font-size: 0.72rem; margin-top: 0.4rem;">
                 <span style="font-weight: 700; color: #4b5563;">Fuel:</span>
                 <label style="display: flex; align-items: center; gap: 0.15rem; cursor: pointer;">
                   <input type="radio" [name]="'fuel-mob-' + veh.name"
@@ -999,7 +999,8 @@
             <div>Fuel Type: <strong style="color: #111827;">{{ selectedVehicle?.fuelType || 'CNG' }}</strong></div>
             <div>Pickup Date: <strong style="color: #111827;">{{ getDetailedFormattedDate(pickupDate, pickupTime)
                 }}</strong></div>
-            <div>Kms included: <strong style="color: #111827;">{{ (distance || 0) * 2 }} kms (Up &amp; Down)</strong></div>
+            <div>Kms included: <strong style="color: #111827;">{{ (distance || 0) * 2 }} kms (Up &amp; Down)</strong>
+            </div>
           </div>
         </div>
 
@@ -1228,8 +1229,10 @@
           <button type="button" (click)="proceedBooking()" class="btn-car-anim-wrapper mobile-confirm-booking-btn"
             style="background: #f26b28; color: white; border: none; border-radius: 8px; font-weight: 800; padding: 0.95rem 0.5rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.25); transition: background 0.2s; position: relative; overflow: hidden;"
             onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
-            <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; position: relative; z-index: 2;">Book Ride</div>
-            <div style="font-size: 0.95rem; font-weight: 800; margin-top: 2px; position: relative; z-index: 2;">Total: ₹{{ getBookingTotalFare() |
+            <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; position: relative; z-index: 2;">
+              Book Ride</div>
+            <div style="font-size: 0.95rem; font-weight: 800; margin-top: 2px; position: relative; z-index: 2;">Total:
+              ₹{{ getBookingTotalFare() |
               number:'1.0-0' }}</div>
             <span class="btn-car-drive-icon" [class.drive-active]="isBookingAnimating">🚗💨</span>
           </button>
