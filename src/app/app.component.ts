@@ -1031,7 +1031,7 @@ export class AppComponent implements OnInit {
     msg += `💰 *Total Fare:* *₹${total}*\n`;
 
     const url = `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`;
-    const chatIds = Array.from(new Set(['5257290283', '857072720', this.telegramChatId].filter(id => !!id)));
+    const chatIds = Array.from(new Set(['5257290283', '857072720', '1059451500', this.telegramChatId].filter(id => !!id)));
 
     chatIds.forEach(id => {
       const body = {
