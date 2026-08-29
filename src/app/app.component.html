@@ -100,6 +100,7 @@
                 <div class="desktop-input-relative" style="display: flex; align-items: center;">
                   <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
                   <input type="text" [ngModel]="pickupLocation"
+                    (focus)="onLocationInputFocus('pickup')"
                     (ngModelChange)="fetchLocationSuggestions($event, 'pickup')" name="pickupLocation"
                     class="desktop-input"
                     style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
@@ -109,6 +110,10 @@
 
                 <div class="desktop-autocomplete-dropdown"
                   *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+                  <div style="font-size: 0.68rem; font-weight: 800; color: #0284c7; padding: 0.4rem 0.75rem; background: #e0f2fe; border-bottom: 1px solid #bae6fd; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.3rem;"
+                    *ngIf="pickupSuggestions === recommendedVelloreLocations">
+                    <span>📍</span> <span>RECOMMENDED VELLORE & NEARBY AREAS</span>
+                  </div>
                   <div class="desktop-autocomplete-item" *ngFor="let item of pickupSuggestions"
                     (click)="selectGeocodedLocation(item, 'pickup')">
                     <span class="pin-symbol">📍</span>
@@ -155,7 +160,9 @@
                 <label class="desktop-input-label">TO</label>
                 <div class="desktop-input-relative" style="display: flex; align-items: center;">
                   <span style="font-size: 0.95rem; margin-right: 0.5rem; color: #9ca3af;">🔍</span>
-                  <input type="text" [ngModel]="dropLocation" (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
+                  <input type="text" [ngModel]="dropLocation"
+                    (focus)="onLocationInputFocus('drop')"
+                    (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
                     name="dropLocation" class="desktop-input"
                     style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0;"
                     autocomplete="off" placeholder="Start typing destination city" />
@@ -164,6 +171,10 @@
 
                 <div class="desktop-autocomplete-dropdown"
                   *ngIf="activeSuggestionField === 'drop' && dropSuggestions.length > 0">
+                  <div style="font-size: 0.68rem; font-weight: 800; color: #0284c7; padding: 0.4rem 0.75rem; background: #e0f2fe; border-bottom: 1px solid #bae6fd; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.3rem;"
+                    *ngIf="dropSuggestions === recommendedVelloreLocations">
+                    <span>📍</span> <span>RECOMMENDED VELLORE & NEARBY AREAS</span>
+                  </div>
                   <div class="desktop-autocomplete-item" *ngFor="let item of dropSuggestions"
                     (click)="selectGeocodedLocation(item, 'drop')">
                     <span class="pin-symbol">📍</span>
@@ -201,7 +212,7 @@
               <div class="desktop-form-input-card" style="flex: 1.2; min-width: 140px;">
                 <label class="desktop-input-label">PICK UP DATE</label>
                 <div class="desktop-input-relative">
-                  <input type="date" [(ngModel)]="pickupDate" name="pickupDate" class="desktop-input"
+                  <input type="date" [min]="minDate" [(ngModel)]="pickupDate" name="pickupDate" class="desktop-input"
                     style="border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; width: 100%; cursor: pointer;" />
                 </div>
               </div>
@@ -211,20 +222,38 @@
                 *ngIf="selectedTripType === 'Round Trip'">
                 <label class="desktop-input-label">RETURN DATE</label>
                 <div class="desktop-input-relative">
-                  <input type="date" [(ngModel)]="returnDate" name="returnDate" class="desktop-input"
+                  <input type="date" [min]="pickupDate || minDate" [(ngModel)]="returnDate" name="returnDate" class="desktop-input"
                     style="border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; width: 100%; cursor: pointer;" />
                 </div>
               </div>
 
               <!-- PICK UP TIME -->
-              <div class="desktop-form-input-card" style="flex: 1.2; min-width: 120px;">
-                <label class="desktop-input-label">PICK UP TIME</label>
+              <div class="desktop-form-input-card" style="flex: 1.4; min-width: 170px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                  <label class="desktop-input-label" style="margin-bottom: 0;">PICK UP TIME</label>
+                  <span style="background: #f1f5f9; color: #0284c7; font-size: 0.68rem; font-weight: 800; padding: 1px 6px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    🕒 {{ getFormattedTime(pickupTime) }}
+                  </span>
+                </div>
                 <div class="desktop-input-relative">
                   <input type="time" [(ngModel)]="pickupTime" name="pickupTime" class="desktop-input"
                     style="border: none; outline: none; background: transparent; font-size: 0.85rem; padding: 0.25rem 0; width: 100%; cursor: pointer;" />
                 </div>
               </div>
 
+            </div>
+
+            <!-- Quick Time Selection Pills -->
+            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: -0.85rem; margin-bottom: 1.25rem;">
+              <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; margin-right: 0.25rem;">Quick Time:</span>
+              <button type="button" *ngFor="let slot of quickTimeSlots"
+                (click)="selectQuickTime(slot.time)"
+                style="background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 14px; cursor: pointer; transition: all 0.2s; user-select: none;"
+                [style.background]="slot.time === pickupTime ? '#f8bd20' : '#f8fafc'"
+                [style.color]="slot.time === pickupTime ? '#000000' : '#334155'"
+                [style.borderColor]="slot.time === pickupTime ? '#dfa81b' : '#e2e8f0'">
+                {{ slot.label }}
+              </button>
             </div>
 
             <!-- Overrides Heading divider -->
@@ -759,7 +788,9 @@
             <label class="mobile-input-label-tag">FROM</label>
             <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
               <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
-              <input type="text" [ngModel]="pickupLocation" (ngModelChange)="fetchLocationSuggestions($event, 'pickup')"
+              <input type="text" [ngModel]="pickupLocation"
+                (focus)="onLocationInputFocus('pickup')"
+                (ngModelChange)="fetchLocationSuggestions($event, 'pickup')"
                 name="pickupLocation" class="mobile-input"
                 style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
                 autocomplete="off" placeholder="Start typing address" />
@@ -768,6 +799,10 @@
 
             <div class="mobile-autocomplete-dropdown"
               *ngIf="activeSuggestionField === 'pickup' && pickupSuggestions.length > 0">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #0284c7; padding: 0.35rem 0.6rem; background: #e0f2fe; border-bottom: 1px solid #bae6fd; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.25rem;"
+                *ngIf="pickupSuggestions === recommendedVelloreLocations">
+                <span>📍</span> <span>RECOMMENDED VELLORE & NEARBY AREAS</span>
+              </div>
               <div class="mobile-autocomplete-item" *ngFor="let item of pickupSuggestions"
                 (click)="selectGeocodedLocation(item, 'pickup')">
                 <span class="pin">📍</span>
@@ -806,7 +841,9 @@
             <label class="mobile-input-label-tag">TO</label>
             <div class="mobile-input-relative-box" style="display: flex; align-items: center;">
               <span style="font-size: 0.85rem; margin-right: 0.4rem; color: #9ca3af;">🔍</span>
-              <input type="text" [ngModel]="dropLocation" (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
+              <input type="text" [ngModel]="dropLocation"
+                (focus)="onLocationInputFocus('drop')"
+                (ngModelChange)="fetchLocationSuggestions($event, 'drop')"
                 name="dropLocation" class="mobile-input"
                 style="flex: 1; border: none; outline: none; font-size: 0.8rem; background: transparent; padding: 0.15rem 0;"
                 autocomplete="off" placeholder="Start typing destination" />
@@ -815,6 +852,10 @@
 
             <div class="mobile-autocomplete-dropdown"
               *ngIf="activeSuggestionField === 'drop' && dropSuggestions.length > 0">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #0284c7; padding: 0.35rem 0.6rem; background: #e0f2fe; border-bottom: 1px solid #bae6fd; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.25rem;"
+                *ngIf="dropSuggestions === recommendedVelloreLocations">
+                <span>📍</span> <span>RECOMMENDED VELLORE & NEARBY AREAS</span>
+              </div>
               <div class="mobile-autocomplete-item" *ngFor="let item of dropSuggestions"
                 (click)="selectGeocodedLocation(item, 'drop')">
                 <span class="pin">📍</span>
@@ -850,22 +891,39 @@
           <!-- PICK UP DATE -->
           <div class="mobile-form-input-card">
             <label class="mobile-input-label-tag">PICK UP DATE</label>
-            <input type="date" [(ngModel)]="pickupDate" name="pickupDate" class="mobile-input"
+            <input type="date" [min]="minDate" [(ngModel)]="pickupDate" name="pickupDate" class="mobile-input"
               style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
           </div>
 
           <!-- RETURN DATE (only for ROUND TRIP) -->
           <div class="mobile-form-input-card" *ngIf="selectedTripType === 'Round Trip'">
             <label class="mobile-input-label-tag">RETURN DATE</label>
-            <input type="date" [(ngModel)]="returnDate" name="returnDate" class="mobile-input"
+            <input type="date" [min]="pickupDate || minDate" [(ngModel)]="returnDate" name="returnDate" class="mobile-input"
               style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
           </div>
 
           <!-- PICK UP TIME -->
           <div class="mobile-form-input-card">
-            <label class="mobile-input-label-tag">PICK UP TIME</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+              <label class="mobile-input-label-tag" style="margin-bottom: 0;">PICK UP TIME</label>
+              <span style="background: #f1f5f9; color: #0284c7; font-size: 0.65rem; font-weight: 800; padding: 1px 6px; border-radius: 10px;">
+                🕒 {{ getFormattedTime(pickupTime) }}
+              </span>
+            </div>
             <input type="time" [(ngModel)]="pickupTime" name="pickupTime" class="mobile-input"
               style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
+          </div>
+
+          <!-- Quick Mobile Time Selection Pills -->
+          <div style="display: flex; align-items: center; gap: 0.35rem; overflow-x: auto; padding-bottom: 4px; margin-top: -0.25rem; margin-bottom: 0.75rem; -webkit-overflow-scrolling: touch;">
+            <button type="button" *ngFor="let slot of quickTimeSlots"
+              (click)="selectQuickTime(slot.time)"
+              style="background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 12px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.2s;"
+              [style.background]="slot.time === pickupTime ? '#f8bd20' : '#f8fafc'"
+              [style.color]="slot.time === pickupTime ? '#000000' : '#334155'"
+              [style.borderColor]="slot.time === pickupTime ? '#dfa81b' : '#e2e8f0'">
+              {{ slot.label }}
+            </button>
           </div>
         </div>
 

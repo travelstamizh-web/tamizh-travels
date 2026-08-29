@@ -151,7 +151,14 @@ This document logs all the design decisions, layout adjustments, API integration
       - **101 - 200 KM**: ₹13 / KM + 5% GST + Driver Allowance ₹300
       - **201 - 300 KM**: ₹12 / KM + 5% GST + Driver Allowance ₹300
       - **301+ KM**: ₹11 / KM + 5% GST + Driver Allowance ₹300
-    * Created a dedicated **Estimates & Tariff Plan** screen view (`mobile-screen-tariff-view`) with clean grid layout alignment, active tier badges, and key tariff notes.
+  * **Dynamic Current Date/Time & Past Dates Boundary**:
+    * Initialized `pickupDate`, `returnDate`, and `pickupTime` to current local date/time in `ngOnInit()`.
+    * Added `[min]="minDate"` boundary to date input elements, disabling past calendar dates.
+  * **Supabase Database Schema & Backend API Integration**:
+    * Created [supabase/schema.sql](file:///Users/babukumar/projects/tamizh-travels/supabase/schema.sql) containing PostgreSQL database tables (`bookings`, `tariff_slabs`, `vehicles`, `coupons`), seed data, and Row Level Security (RLS) policies.
+    * Created [api/calculate.js](file:///Users/babukumar/projects/tamizh-travels/api/calculate.js) serverless API endpoint executing distance tariff slab calculations, driver allowances (> 100 KM), waiting charges, 5% GST, and promo discount validation.
+    * Integrated `@supabase/supabase-js` `createClient` into [api/bookings.js](file:///Users/babukumar/projects/tamizh-travels/api/bookings.js) for inserting and querying PostgreSQL `bookings` table records.
+    * Created [src/app/services/supabase.service.ts](file:///Users/babukumar/projects/tamizh-travels/src/app/services/supabase.service.ts) Angular service encapsulating Supabase client operations.
 
 ---
 

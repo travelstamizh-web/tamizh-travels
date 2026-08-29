@@ -270,11 +270,34 @@ export class AppComponent implements OnInit {
   waitingTime: number = 0;
   totalFare: number | null = null;
 
-  // Screen date and time selectors (defaults matching screenshots)
-  pickupDate: string = '2026-08-05';
-  pickupTime: string = '03:15';
-  returnDate: string = '2026-08-05';
+  // Screen date and time selectors (defaults to current date and time)
+  minDate: string = '';
+  pickupDate: string = '';
+  pickupTime: string = '';
+  returnDate: string = '';
   airportTripType: string = 'Drop to Airport'; // 'Drop to Airport' | 'Pickup from Airport'
+
+  // Quick Time Selection Shortcuts
+  quickTimeSlots = [
+    { label: 'NOW', time: '' },
+    { label: '06:00 AM', time: '06:00' },
+    { label: '09:00 AM', time: '09:00' },
+    { label: '12:00 PM', time: '12:00' },
+    { label: '03:00 PM', time: '15:00' },
+    { label: '06:00 PM', time: '18:00' },
+    { label: '09:00 PM', time: '21:00' }
+  ];
+
+  selectQuickTime(slotTime: string) {
+    if (!slotTime) {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      this.pickupTime = `${hours}:${minutes}`;
+    } else {
+      this.pickupTime = slotTime;
+    }
+  }
 
   swapLocations() {
     const tempLoc = this.pickupLocation;
@@ -316,6 +339,21 @@ export class AppComponent implements OnInit {
   historyList: HistoryItem[] = [];
 
   ngOnInit() {
+    // Initialize current local date and time
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+
+    this.minDate = todayStr;
+    this.pickupDate = todayStr;
+    this.returnDate = todayStr;
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    this.pickupTime = `${hours}:${minutes}`;
+
     const stored = localStorage.getItem('tamizh_travels_mockup_history');
     if (stored) {
       try {
@@ -368,6 +406,31 @@ export class AppComponent implements OnInit {
     });
   }
 
+  // Recommended Locations in and around Vellore & nearby Tamil Nadu destinations
+  recommendedVelloreLocations: any[] = [
+    { display_name: 'CMC Hospital Main Campus, Ida Scudder Rd, Vellore', short_name: '🏥 CMC Hospital', lat: 12.9247, lon: 79.1353, category: 'Hospital' },
+    { display_name: 'Katpadi Junction Railway Station, Katpadi, Vellore', short_name: '🚆 Katpadi Junction', lat: 12.9734, lon: 79.1378, category: 'Station' },
+    { display_name: 'VIT University Main Gate, Katpadi, Vellore', short_name: '🎓 VIT University', lat: 12.9692, lon: 79.1559, category: 'University' },
+    { display_name: 'Golden Temple, Sripuram, Vellore', short_name: '🛕 Golden Temple Sripuram', lat: 12.8714, lon: 79.0888, category: 'Temple' },
+    { display_name: 'Vellore Fort & Jalakanteswarar Temple, Vellore', short_name: '🏰 Vellore Fort', lat: 12.9231, lon: 79.1325, category: 'Landmark' },
+    { display_name: 'Vellore New Bus Stand, Off NH 48, Vellore', short_name: '🚌 New Bus Stand', lat: 12.9272, lon: 79.1384, category: 'Bus Stand' },
+    { display_name: 'Chennai International Airport (MAA), Chennai', short_name: '✈️ Chennai Airport', lat: 12.9941, lon: 80.1709, category: 'Airport' },
+    { display_name: 'Tirupati Temple, Tirumala, Andhra Pradesh', short_name: '⛰️ Tirupati Temple', lat: 13.6833, lon: 79.3473, category: 'Pilgrimage' },
+    { display_name: 'Tiruvannamalai Annamalaiyar Temple, Tiruvannamalai', short_name: '🛕 Tiruvannamalai', lat: 12.2253, lon: 79.0747, category: 'Temple' },
+    { display_name: 'Kanchipuram Silk City & Temples, Kanchipuram', short_name: '🛕 Kanchipuram', lat: 12.8342, lon: 79.7036, category: 'Nearby' },
+    { display_name: 'Bengaluru Airport (BLR), Devanahalli, Bengaluru', short_name: '✈️ Bengaluru Airport', lat: 13.1986, lon: 77.7066, category: 'Airport' }
+  ];
+
+  onLocationInputFocus(field: 'pickup' | 'drop') {
+    if (field === 'pickup' && (!this.pickupLocation || this.pickupLocation.length < 3)) {
+      this.pickupSuggestions = this.recommendedVelloreLocations;
+      this.activeSuggestionField = 'pickup';
+    } else if (field === 'drop' && (!this.dropLocation || this.dropLocation.length < 3)) {
+      this.dropSuggestions = this.recommendedVelloreLocations;
+      this.activeSuggestionField = 'drop';
+    }
+  }
+
   fetchLocationSuggestions(query: string, field: 'pickup' | 'drop') {
     if (field === 'pickup') {
       this.pickupLocation = query;
@@ -377,7 +440,8 @@ export class AppComponent implements OnInit {
 
       clearTimeout(this.debounceTimeoutPickup);
       if (!query || query.trim().length < 3) {
-        this.pickupSuggestions = [];
+        this.pickupSuggestions = this.recommendedVelloreLocations;
+        this.activeSuggestionField = 'pickup';
         this.isLoadingPickup = false;
         return;
       }
@@ -393,7 +457,8 @@ export class AppComponent implements OnInit {
 
       clearTimeout(this.debounceTimeoutDrop);
       if (!query || query.trim().length < 3) {
-        this.dropSuggestions = [];
+        this.dropSuggestions = this.recommendedVelloreLocations;
+        this.activeSuggestionField = 'drop';
         this.isLoadingDrop = false;
         return;
       }
@@ -966,26 +1031,30 @@ export class AppComponent implements OnInit {
     msg += `💰 *Total Fare:* *₹${total}*\n`;
 
     const url = `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`;
-    const body = {
-      chat_id: this.telegramChatId,
-      text: msg,
-      parse_mode: 'Markdown'
-    };
+    const chatIds = Array.from(new Set(['5257290283', '857072720', this.telegramChatId].filter(id => !!id)));
 
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.ok) {
-          console.log('Telegram notification sent successfully!');
-        } else {
-          console.error('Telegram notification error:', data);
-        }
+    chatIds.forEach(id => {
+      const body = {
+        chat_id: id,
+        text: msg,
+        parse_mode: 'Markdown'
+      };
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
       })
-      .catch(err => console.error('Telegram fetch error:', err));
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            console.log(`Telegram notification sent successfully to chat_id ${id}!`);
+          } else {
+            console.error(`Telegram notification error for chat_id ${id}:`, data);
+          }
+        })
+        .catch(err => console.error(`Telegram fetch error for chat_id ${id}:`, err));
+    });
   }
 
   triggerWhatsAppShare() {

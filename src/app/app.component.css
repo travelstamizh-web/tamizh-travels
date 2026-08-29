@@ -458,13 +458,60 @@
   width: 100%;
   padding: 0.95rem;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.98rem;
   margin-top: 1.25rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: hotlineGlowPulse 2.5s infinite;
+}
+
+.mobile-call-hotline-btn svg {
+  margin-right: 8px;
+  display: inline-block;
+  transform-origin: center center;
+  animation: hotlinePhoneRing 2.2s ease-in-out infinite;
+  color: #f8bd20;
+  stroke: #f8bd20;
+}
+
+.mobile-call-hotline-btn:hover {
+  background: #1e293b;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(248, 189, 32, 0.35);
+}
+
+.mobile-call-hotline-btn:hover svg {
+  animation: phoneIconWiggle 0.4s ease-in-out infinite alternate !important;
+  color: #fbbf24;
+  stroke: #fbbf24;
+}
+
+.mobile-call-hotline-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+@keyframes hotlinePhoneRing {
+  0% { transform: rotate(0deg) scale(1); }
+  4% { transform: rotate(-16deg) scale(1.22); }
+  8% { transform: rotate(16deg) scale(1.22); }
+  12% { transform: rotate(-16deg) scale(1.22); }
+  16% { transform: rotate(16deg) scale(1.22); }
+  20% { transform: rotate(-10deg) scale(1.15); }
+  24% { transform: rotate(10deg) scale(1.15); }
+  28% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes hotlineGlowPulse {
+  0% { box-shadow: 0 0 0 0 rgba(248, 189, 32, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(248, 189, 32, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(248, 189, 32, 0); }
 }
 
 /* Mobile input form card fields */
