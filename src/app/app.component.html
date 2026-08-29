@@ -4,11 +4,13 @@
 <div class="desktop-layout-container fade-in">
   <!-- Desktop Header -->
   <header class="desktop-header-banner">
-    <div class="desktop-header-logo-block">
-      <!-- Car Logo Image -->
-      <img src="app-logo.jpg" alt="Tamizh Travels Logo"
-        style="height: 32px; width: 32px; object-fit: cover; border-radius: 6px; margin-right: 10px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" />
-      <span class="desktop-brand-title">Tamizh Travels</span>
+    <div class="desktop-header-logo-block logo-animated-wrapper" (click)="goHome()" style="cursor: pointer;"
+      title="Go to Home">
+      <div class="logo-image-box">
+        <img src="app-logo.jpg" alt="Tamizh Travels Logo" class="animated-app-logo" />
+        <span class="logo-shimmer-beam"></span>
+      </div>
+      <span class="desktop-brand-title animated-brand-text">Tamizh Travels</span>
     </div>
 
     <div class="desktop-header-support" (click)="triggerDirectCall()" style="cursor: pointer;">
@@ -270,6 +272,54 @@
 
           </div>
 
+          <!-- 📊 Official Tariff Plan Card -->
+          <div class="official-tariff-card"
+            style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.15rem; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-top: 1.5rem; margin-bottom: 1rem;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+              <div>
+                <h3
+                  style="font-size: 1.05rem; font-weight: 900; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>📊</span> <span>Tamizh Travels Official Tariff Plan</span>
+                </h3>
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">Standard Distance Rates (+ 5% GST)
+                </div>
+              </div>
+              <span
+                style="background: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.75rem; border-radius: 20px; border: 1px solid #fde68a;"
+                *ngIf="distance">
+                Distance: {{ selectedTripType === 'Round Trip' ? (distance || 0) * 2 : (distance || 0) }} KMs
+              </span>
+            </div>
+
+            <!-- Tariff Grid -->
+            <div class="tariff-grid-container"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.6rem;">
+              <div *ngFor="let slab of tariffSlabs; let i = index" class="tariff-slab-box"
+                [class.active-slab]="getActiveTariffTierIndex() === i"
+                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.4rem; text-align: center; position: relative; transition: all 0.2s;"
+                [style.borderColor]="getActiveTariffTierIndex() === i ? '#f8bd20' : '#e2e8f0'"
+                [style.background]="getActiveTariffTierIndex() === i ? '#fffdf5' : '#f8fafc'"
+                [style.boxShadow]="getActiveTariffTierIndex() === i ? '0 4px 12px rgba(248, 189, 32, 0.25)' : 'none'">
+
+                <div
+                  style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">
+                  {{ slab.range }}</div>
+                <div style="font-size: 0.92rem; font-weight: 900; color: #0f172a; margin-bottom: 2px;">{{ slab.baseRate
+                  }}</div>
+                <div style="font-size: 0.68rem; font-weight: 600; color: #475569;">+ {{ slab.gst }} GST</div>
+                <div style="font-size: 0.68rem; font-weight: 800; color: #0284c7; margin-top: 4px;">
+                  Driver: {{ slab.driverAllowance }}
+                </div>
+
+                <div *ngIf="getActiveTariffTierIndex() === i && distance"
+                  style="position: absolute; top: -9px; right: -4px; background: #f8bd20; color: #000; font-size: 0.58rem; font-weight: 900; padding: 2px 6px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); letter-spacing: 0.5px;">
+                  ACTIVE TIER
+                </div>
+              </div>
+            </div>
+          </div>
+
           <button type="submit" class="btn-car-anim-wrapper desktop-submit-cta-btn" [disabled]="isLocating"
             style="background: #f26b28; color: white; border: none; font-weight: 800; font-size: 1.05rem; padding: 0.85rem 2.5rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin-top: 1rem; width: 100%; box-shadow: 0 4px 12px rgba(242,107,40,0.15); position: relative; overflow: hidden;"
             onmouseover="this.style.background='#e0591b'" onmouseout="this.style.background='#f26b28'">
@@ -464,10 +514,13 @@
       <span class="mobile-brand-slogan-tag">Let's go safely</span>
     </div>
 
-    <div class="mobile-banner-right">
-      <!-- App Logo Image -->
-      <img src="app-logo.jpg" alt="Tamizh Travels Logo"
-        style="height: 48px; width: 48px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); border: 2px solid #000;" />
+    <div class="mobile-banner-right logo-animated-wrapper" (click)="goHome()" style="cursor: pointer;"
+      title="Go to Home">
+      <div class="logo-image-box">
+        <img src="app-logo.jpg" alt="Tamizh Travels Logo" class="animated-app-logo"
+          style="height: 48px; width: 48px;" />
+        <span class="logo-shimmer-beam"></span>
+      </div>
     </div>
   </div>
 
@@ -484,6 +537,7 @@
     <h3 class="mobile-banner-title">
       <span *ngIf="activeMobileScreen === 'INPUT'">New Estimate</span>
       <span *ngIf="activeMobileScreen === 'SUMMARY'">Fare Estimate</span>
+      <span *ngIf="activeMobileScreen === 'TARIFF'">Estimates & Tariff Plan</span>
       <span *ngIf="activeMobileScreen === 'SETTINGS'">Rate Settings</span>
       <span *ngIf="activeMobileScreen === 'HISTORY'">Recent Activities</span>
     </h3>
@@ -510,6 +564,63 @@
 
   <!-- Mobile screen content layouts -->
   <div class="mobile-screen-scroll-container">
+
+    <div class="mobile-screen-tariff-view fade-in" *ngIf="activeMobileScreen === 'TARIFF'"
+      style="box-sizing: border-box; text-align: left; padding: 0.5rem 0;">
+      <!-- 📊 Official Tariff Plan Card -->
+      <div class="official-tariff-card"
+        style="background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.65rem; flex-wrap: wrap; gap: 0.35rem;">
+          <div>
+            <h3
+              style="font-size: 1rem; font-weight: 900; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+              <span>📊</span> <span>Official Tariff Plan</span>
+            </h3>
+            <div style="font-size: 0.72rem; color: #64748b; margin-top: 2px;">Standard Distance Rates (+ 5% GST)</div>
+          </div>
+          <span
+            style="background: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 16px; border: 1px solid #fde68a;"
+            *ngIf="distance">
+            {{ selectedTripType === 'Round Trip' ? (distance || 0) * 2 : (distance || 0) }} KMs
+          </span>
+        </div>
+
+        <!-- Tariff Grid -->
+        <div class="tariff-grid-container"
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 0.6rem;">
+          <div *ngFor="let slab of tariffSlabs; let i = index" class="tariff-slab-box"
+            style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.4rem; text-align: center; position: relative; transition: all 0.2s;"
+            [style.borderColor]="'#e2e8f0'" [style.background]="'#f8fafc'"
+            [style.boxShadow]="getActiveTariffTierIndex() === i ? '0 3px 10px rgba(248, 189, 32, 0.25)' : 'none'">
+
+            <div
+              style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px;">
+              {{ slab.range }}</div>
+            <div style="font-size: 0.9rem; font-weight: 900; color: #0f172a; margin-bottom: 2px;">{{ slab.baseRate }}
+            </div>
+            <div style="font-size: 0.65rem; font-weight: 600; color: #475569;">+ {{ slab.gst }} GST</div>
+            <div style="font-size: 0.65rem; font-weight: 800; color: #0284c7; margin-top: 4px;">
+              Driver: {{ slab.driverAllowance }}
+            </div>
+
+            <div *ngIf="getActiveTariffTierIndex() === i && distance"
+              style="position: absolute; top: -8px; right: -3px; background: #f8bd20; color: #000; font-size: 0.55rem; font-weight: 900; padding: 1px 5px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+              ACTIVE TIER
+            </div>
+          </div>
+        </div>
+
+        <!-- Tariff Notes Callout -->
+        <div
+          style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem; margin-top: 1rem; font-size: 0.76rem; color: #475569; line-height: 1.5;">
+          <strong style="color: #0f172a; display: block; margin-bottom: 0.25rem;">📌 Important Notes:</strong>
+          • Toll & Parking charges extra at actuals.<br />
+          • Driver Allowance ₹300 for trips > 100 KMs.<br />
+          • 5% GST applicable on calculated subtotal.
+        </div>
+      </div>
+    </div>
 
     <!-- Screen 1: Dashboard Home -->
     <div class="mobile-screen-dashboard-view fade-in" *ngIf="activeMobileScreen === 'DASHBOARD'">
@@ -756,7 +867,6 @@
             <input type="time" [(ngModel)]="pickupTime" name="pickupTime" class="mobile-input"
               style="width: 100%; border: none; outline: none; background: transparent; font-size: 0.8rem; padding: 0.15rem 0; cursor: pointer;" />
           </div>
-
         </div>
 
         <!-- Mobile Explore Cabs Button -->
@@ -1089,6 +1199,13 @@
           <div *ngIf="couponApplied" style="color: #16a34a; font-size: 0.75rem; font-weight: 700; margin-top: 4px;">
             ✔ Coupon applied! Saved ₹{{ couponDiscount }}
           </div>
+          <!-- Coupon Promo Hint Callout -->
+          <div
+            style="margin-top: 0.5rem; font-size: 0.75rem; color: #475569; display: flex; align-items: center; gap: 0.4rem; background: #f0f9ff; border: 1px dashed #0284c7; border-radius: 6px; padding: 0.4rem 0.65rem;">
+            <span style="font-weight: 800; color: #0284c7; cursor: pointer; text-decoration: underline;"
+              (click)="couponCode = 'WELCOME50'" title="Click to apply WELCOME50">WELCOME50</span>
+            <span>— Get ₹50 OFF for trips &gt; 100 km</span>
+          </div>
         </div>
 
         <!-- SAY HELLO TO YOUR TRAVEL EXPERT CALLOUT BANNER -->
@@ -1166,9 +1283,9 @@
 
       </div>
 
-      <!-- BOTTOM STICKY FLOATING PAYMENT BAR (Matching Screenshot 4) -->
+      <!-- BOTTOM PAYMENT BAR -->
       <div class="mobile-sticky-bottom-payment-bar"
-        style="position: sticky; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 0.85rem 1rem; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); z-index: 100; margin: 1.5rem -1rem 0 -1rem;">
+        style="position: relative; background: white; border-top: 1px solid #e5e7eb; padding: 1rem 10px; margin-top: 1.5rem;border-radius: 12px;">
 
         <!-- Total Fare Header Row with Info icon -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
@@ -1354,15 +1471,15 @@
       <span class="tab-icon">🏠</span>
       <span class="tab-label">Home</span>
     </button>
+    <button class="tab-item" [ngClass]="{'active': activeMobileScreen === 'TARIFF'}"
+      (click)="setMobileScreen('TARIFF')">
+      <span class="tab-icon">📊</span>
+      <span class="tab-label">Estimates</span>
+    </button>
     <button class="tab-item" [ngClass]="{'active': activeMobileScreen === 'HISTORY'}"
       (click)="setMobileScreen('HISTORY')">
       <span class="tab-icon">📋</span>
-      <span class="tab-label">Estimates</span>
-    </button>
-    <button class="tab-item hide" [ngClass]="{'active': activeMobileScreen === 'SETTINGS'}"
-      (click)="setMobileScreen('SETTINGS')">
-      <span class="tab-icon">⚙️</span>
-      <span class="tab-label">Settings</span>
+      <span class="tab-label">Activities</span>
     </button>
   </nav>
 
@@ -1611,6 +1728,13 @@
             </div>
             <div *ngIf="couponApplied" style="color: #16a34a; font-size: 0.75rem; font-weight: 700; margin-top: 4px;">
               ✔ Coupon applied! Saved ₹{{ couponDiscount }}
+            </div>
+            <!-- Coupon Promo Hint Callout -->
+            <div
+              style="margin-top: 0.5rem; font-size: 0.75rem; color: #475569; display: flex; align-items: center; gap: 0.4rem; background: #f0f9ff; border: 1px dashed #0284c7; border-radius: 6px; padding: 0.4rem 0.65rem;">
+              <span style="font-weight: 800; color: #0284c7; cursor: pointer; text-decoration: underline;"
+                (click)="couponCode = 'WELCOME50'" title="Click to apply WELCOME50">WELCOME50</span>
+              <span>— Get ₹50 OFF for trips &gt; 100 km</span>
             </div>
           </div>
 

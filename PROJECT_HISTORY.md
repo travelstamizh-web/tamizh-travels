@@ -135,9 +135,23 @@ This document logs all the design decisions, layout adjustments, API integration
   * **Brand Logo & #f8bd20 Theme Color Integration**:
     * Set `--primary-yellow` in `src/styles.css` to **`#f8bd20`**.
     * Replaced SVG car icons in desktop & mobile headers and browser favicon with the custom yellow & black car artwork (`app-logo.jpg`).
-  * **CTA Button Car Drive Animation**:
-    * Added smooth car drive animation (`carDriveAcrossButton`) to **Explore Cabs** and **Book Ride** buttons.
-    * When clicked or while fetching routes (`isLocating`), a car icon 🚗💨 drives smoothly across the button from left to right.
+  * **Universal Interactive Icon & Button Animations**:
+    * Added smooth hover, wiggle/ring, spin, pulse, and tactile click-press animations across all icons:
+      - **Phone Support Icons**: Phone ring/wiggle keyframes (`phoneIconWiggle`) on hover + press compression.
+      - **Swap Buttons**: 180° smooth spin + `#f8bd20` glow on hover + spring bounce on click.
+      - **GPS Target Icons**: Target rotation & glow on hover + pop-down press.
+      - **Vehicle Cards & Images**: Forward drive translation (`translateX(6px)`) + shadow elevation on hover.
+      - **Back & Close Buttons**: Arrow slide (`translateX(-4px)`) + 90° spin close on hover.
+  * **Official Tariff Plan Engine & Display Card**:
+    * Updated `getDynamicRatePerKm()` and `getFareBreakdown()` with exact distance tariff slabs:
+      - **0 - 10 KM**: Flat ₹200 Base + 5% GST (Driver: ₹0)
+      - **11 - 20 KM**: ₹20 / KM + 5% GST (Driver: ₹0)
+      - **21 - 40 KM**: ₹17 / KM + 5% GST (Driver: ₹0)
+      - **41 - 100 KM**: ₹14 / KM + 5% GST (Driver: ₹0)
+      - **101 - 200 KM**: ₹13 / KM + 5% GST + Driver Allowance ₹300
+      - **201 - 300 KM**: ₹12 / KM + 5% GST + Driver Allowance ₹300
+      - **301+ KM**: ₹11 / KM + 5% GST + Driver Allowance ₹300
+    * Created a dedicated **Estimates & Tariff Plan** screen view (`mobile-screen-tariff-view`) with clean grid layout alignment, active tier badges, and key tariff notes.
 
 ---
 

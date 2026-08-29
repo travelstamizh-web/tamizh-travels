@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
   couponApplied: boolean = false;
   couponDiscount: number = 0;
   showFareBreakup: boolean = true;
-  showTerms: boolean = false;
+  showTerms: boolean = true;
 
   // Modern Toast / Popup Notification State
   showAlertModal: boolean = false;
@@ -151,10 +151,18 @@ export class AppComponent implements OnInit {
 
   applyCoupon() {
     const code = this.couponCode.trim().toUpperCase();
-    if (code === 'NEW50') {
-      this.couponDiscount = 50;
-      this.couponApplied = true;
-      this.showCustomAlert(`Coupon ${code} applied! You saved ₹${this.couponDiscount}`, 'success', 'Coupon Applied!');
+    const tripKm = (this.distance || 0) * 2;
+
+    if (code === 'WELCOME50') {
+      if (tripKm > 100 || (this.distance || 0) > 100) {
+        this.couponDiscount = 50;
+        this.couponApplied = true;
+        this.showCustomAlert(`Coupon ${code} applied! You saved ₹${this.couponDiscount}`, 'success', 'Coupon Applied!');
+      } else {
+        this.couponDiscount = 0;
+        this.couponApplied = false;
+        this.showCustomAlert('Coupon WELCOME50 is applicable only for trips greater than 100 km.', 'warning', 'Trip Distance Limit');
+      }
     } else {
       this.couponDiscount = 0;
       this.couponApplied = false;
@@ -665,19 +673,37 @@ export class AppComponent implements OnInit {
     return res;
   }
 
+  tariffSlabs = [
+    { range: '0 - 10 KM', baseRate: 'Flat ₹200', ratePerKm: 'Flat ₹200 Base', driverAllowance: '₹0', gst: '5%' },
+    { range: '11 - 20 KM', baseRate: '₹20 / KM', ratePerKm: '₹20/km', driverAllowance: '₹0', gst: '5%' },
+    { range: '21 - 40 KM', baseRate: '₹17 / KM', ratePerKm: '₹17/km', driverAllowance: '₹0', gst: '5%' },
+    { range: '41 - 100 KM', baseRate: '₹14 / KM', ratePerKm: '₹14/km', driverAllowance: '₹0', gst: '5%' },
+    { range: '101 - 200 KM', baseRate: '₹13 / KM', ratePerKm: '₹13/km', driverAllowance: '₹300', gst: '5%' },
+    { range: '201 - 300 KM', baseRate: '₹12 / KM', ratePerKm: '₹12/km', driverAllowance: '₹300', gst: '5%' },
+    { range: '301+ KM', baseRate: '₹11 / KM', ratePerKm: '₹11/km', driverAllowance: '₹300', gst: '5%' }
+  ];
+
+  getActiveTariffTierIndex(): number {
+    const d = this.selectedTripType === 'Round Trip' ? (this.distance || 0) * 2 : (this.distance || 0);
+    if (d <= 10) return 0;
+    if (d <= 20) return 1;
+    if (d <= 40) return 2;
+    if (d <= 100) return 3;
+    if (d <= 200) return 4;
+    if (d <= 300) return 5;
+    return 6;
+  }
+
   getDynamicRatePerKm(vehicle: any, dist: number): number {
     let baseRate = 14;
 
-    if (this.selectedTripType === 'One Way') {
-      baseRate = 19; // baseline Hatchback rate so that Sedan/Dzire is baseRate + 2 = 21
-    } else {
-      if (dist <= 20) baseRate = 20;
-      else if (dist <= 40) baseRate = 17;
-      else if (dist <= 100) baseRate = 14;
-      else if (dist <= 200) baseRate = 13;
-      else if (dist <= 300) baseRate = 12;
-      else baseRate = 11;
-    }
+    if (dist <= 10) baseRate = 20;
+    else if (dist <= 20) baseRate = 20;
+    else if (dist <= 40) baseRate = 17;
+    else if (dist <= 100) baseRate = 14;
+    else if (dist <= 200) baseRate = 13;
+    else if (dist <= 300) baseRate = 12;
+    else baseRate = 11;
 
     if (!vehicle) return baseRate;
 
@@ -702,8 +728,6 @@ export class AppComponent implements OnInit {
     }
 
     let calcDistance = dist;
-    const vehicleBase = this.baseFare + (veh.baseFareOffset - 80);
-
     if (this.selectedTripType === 'Round Trip') {
       calcDistance = dist * 2;
     } else if (this.selectedTripType === 'Local') {
@@ -713,13 +737,18 @@ export class AppComponent implements OnInit {
     }
 
     const rate = this.getDynamicRatePerKm(veh, calcDistance);
-    // const baseAndFuel = Math.round(vehicleBase + (calcDistance * rate)); with basefare
-    const baseAndFuel = Math.round(calcDistance * rate);
-    const driverAllowance = 0;
+    let baseAndFuel = 0;
+    if (calcDistance <= 10 && calcDistance > 0) {
+      baseAndFuel = 200;
+    } else {
+      baseAndFuel = Math.round(calcDistance * rate);
+    }
+
+    const driverAllowance = (calcDistance > 100) ? 300 : 0;
     const nightAllowance = 0;
     const waitingCharges = Math.max(0, (this.waitingTime || 0) - 60) * 1;
 
-    const subtotal = baseAndFuel + waitingCharges;
+    const subtotal = baseAndFuel + driverAllowance + waitingCharges;
     const gst = Math.round(subtotal * 0.05);
     const total = subtotal + gst;
 
