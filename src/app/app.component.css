@@ -7,7 +7,7 @@
     flex-direction: column;
     width: 100%;
     min-height: 100vh;
-    background-color: #f1f5f9;
+    background-color: transparent;
   }
 
   .mobile-layout-container {
@@ -25,7 +25,7 @@
     flex-direction: column;
     width: 100%;
     min-height: 100vh;
-    background-color: #f3f4f6;
+    background-color: transparent;
     position: relative;
   }
 }
@@ -497,21 +497,55 @@
 }
 
 @keyframes hotlinePhoneRing {
-  0% { transform: rotate(0deg) scale(1); }
-  4% { transform: rotate(-16deg) scale(1.22); }
-  8% { transform: rotate(16deg) scale(1.22); }
-  12% { transform: rotate(-16deg) scale(1.22); }
-  16% { transform: rotate(16deg) scale(1.22); }
-  20% { transform: rotate(-10deg) scale(1.15); }
-  24% { transform: rotate(10deg) scale(1.15); }
-  28% { transform: rotate(0deg) scale(1); }
-  100% { transform: rotate(0deg) scale(1); }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  4% {
+    transform: rotate(-16deg) scale(1.22);
+  }
+
+  8% {
+    transform: rotate(16deg) scale(1.22);
+  }
+
+  12% {
+    transform: rotate(-16deg) scale(1.22);
+  }
+
+  16% {
+    transform: rotate(16deg) scale(1.22);
+  }
+
+  20% {
+    transform: rotate(-10deg) scale(1.15);
+  }
+
+  24% {
+    transform: rotate(10deg) scale(1.15);
+  }
+
+  28% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
 }
 
 @keyframes hotlineGlowPulse {
-  0% { box-shadow: 0 0 0 0 rgba(248, 189, 32, 0.5); }
-  70% { box-shadow: 0 0 0 10px rgba(248, 189, 32, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(248, 189, 32, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(248, 189, 32, 0.5);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(248, 189, 32, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 189, 32, 0);
+  }
 }
 
 /* Mobile input form card fields */
@@ -1678,12 +1712,10 @@
   left: -100%;
   width: 50%;
   height: 200%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.65) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.65) 50%,
+      rgba(255, 255, 255, 0) 100%);
   transform: rotate(25deg);
   animation: logoShimmerPass 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
@@ -1694,10 +1726,12 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 6px rgba(248, 189, 32, 0.3);
     transform: translateY(0);
   }
+
   50% {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), 0 0 16px rgba(248, 189, 32, 0.7);
     transform: translateY(-2px);
   }
+
   100% {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 6px rgba(248, 189, 32, 0.3);
     transform: translateY(0);
@@ -1708,9 +1742,11 @@
   0% {
     left: -100%;
   }
+
   30% {
     left: 200%;
   }
+
   100% {
     left: 200%;
   }
@@ -1763,11 +1799,25 @@ a[href^="tel:"]:active {
 }
 
 @keyframes phoneIconWiggle {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-14deg) scale(1.15); }
-  50% { transform: rotate(14deg) scale(1.15); }
-  75% { transform: rotate(-8deg) scale(1.1); }
-  100% { transform: rotate(8deg) scale(1.1); }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: rotate(-14deg) scale(1.15);
+  }
+
+  50% {
+    transform: rotate(14deg) scale(1.15);
+  }
+
+  75% {
+    transform: rotate(-8deg) scale(1.1);
+  }
+
+  100% {
+    transform: rotate(8deg) scale(1.1);
+  }
 }
 
 /* 2. Location Swap Buttons */

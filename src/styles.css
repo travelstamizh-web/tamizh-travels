@@ -8,14 +8,14 @@
   --dark-gray: #121212;
   --light-gray: #f3f4f6;
   --border-color: #e4e4e7;
-  
+
   --marker-green: #10b981;
   --marker-red: #ef4444;
   --text-dark: #000000;
   --text-medium: #4b5563;
   --text-light: #9ca3af;
   --white: #ffffff;
-  
+
   --font-sans: 'Inter', 'Roboto', -apple-system, sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -29,11 +29,10 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: #f1f5f9;
+  background: linear-gradient(135deg, rgba(241, 245, 249, 0.82), rgba(248, 250, 252, 0.88)),
+    url('assets/vellore-bg.jpg') no-repeat center center fixed;
+  background-size: cover;
   color: var(--text-dark);
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
@@ -42,13 +41,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--light-gray);
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
@@ -63,6 +65,7 @@ body {
     opacity: 0;
     transform: translateY(5px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -70,7 +73,8 @@ body {
 }
 
 /* --- GLOBAL FULL-PAGE & MOBILE SCREEN SCROLLABILITY --- */
-html, body {
+html,
+body {
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto !important;
